@@ -1,0 +1,407 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3801A75E15E50C6900CF720C /* ISO8601DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3801A75D15E50C6900CF720C /* ISO8601DateFormatter.m */; };
+		3801A76215E52CD400CF720C /* ADNURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 3801A76115E52CD300CF720C /* ADNURLConnection.m */; };
+		38BD926F15E428BE00278431 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 38BD926D15E428BE00278431 /* InfoPlist.strings */; };
+		38BD927115E428BE00278431 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD927015E428BE00278431 /* main.m */; };
+		38BD927515E428BE00278431 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 38BD927315E428BE00278431 /* Credits.rtf */; };
+		38BD927815E428BE00278431 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD927715E428BE00278431 /* AppDelegate.m */; };
+		38BD927B15E428BF00278431 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 38BD927915E428BF00278431 /* MainMenu.xib */; };
+		38BD929A15E428E400278431 /* AppDotNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD928315E428E400278431 /* AppDotNet.m */; };
+		38BD92A315E428E400278431 /* CHANGELOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 38BD929615E428E400278431 /* CHANGELOG.md */; };
+		38BD92A415E428E400278431 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD929815E428E400278431 /* JSONKit.m */; };
+		38BD92A515E428E400278431 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 38BD929915E428E400278431 /* README.md */; };
+		38BD931D15E432AF00278431 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38BD926415E428BE00278431 /* Cocoa.framework */; };
+		38BD932715E44EC200278431 /* ADNUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD932615E44EC200278431 /* ADNUser.m */; };
+		38BD932E15E44F5900278431 /* ADNMention.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD932D15E44F5900278431 /* ADNMention.m */; };
+		38BD933115E4523900278431 /* ADNHashTag.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD933015E4523900278431 /* ADNHashTag.m */; };
+		38BD933415E4524600278431 /* ADNLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD933315E4524500278431 /* ADNLink.m */; };
+		38BD933715E4524F00278431 /* ADNFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD933615E4524F00278431 /* ADNFilter.m */; };
+		38BD933A15E454A700278431 /* ADNImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD933915E454A700278431 /* ADNImage.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		38BD931F15E432BF00278431 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		3801A75C15E50C6900CF720C /* ISO8601DateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISO8601DateFormatter.h; sourceTree = "<group>"; };
+		3801A75D15E50C6900CF720C /* ISO8601DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISO8601DateFormatter.m; sourceTree = "<group>"; };
+		3801A76015E52CD300CF720C /* ADNURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNURLConnection.h; sourceTree = "<group>"; };
+		3801A76115E52CD300CF720C /* ADNURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNURLConnection.m; sourceTree = "<group>"; };
+		38BD926015E428BE00278431 /* objc-appdotnet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "objc-appdotnet.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		38BD926415E428BE00278431 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		38BD926715E428BE00278431 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		38BD926815E428BE00278431 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		38BD926915E428BE00278431 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		38BD926C15E428BE00278431 /* objc-appdotnet-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "objc-appdotnet-Info.plist"; sourceTree = "<group>"; };
+		38BD926E15E428BE00278431 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		38BD927015E428BE00278431 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		38BD927215E428BE00278431 /* objc-appdotnet-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "objc-appdotnet-Prefix.pch"; sourceTree = "<group>"; };
+		38BD927415E428BE00278431 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		38BD927615E428BE00278431 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		38BD927715E428BE00278431 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		38BD927A15E428BF00278431 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		38BD928215E428E400278431 /* AppDotNet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDotNet.h; sourceTree = "<group>"; };
+		38BD928315E428E400278431 /* AppDotNet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDotNet.m; sourceTree = "<group>"; };
+		38BD929615E428E400278431 /* CHANGELOG.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = "<group>"; };
+		38BD929715E428E400278431 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
+		38BD929815E428E400278431 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
+		38BD929915E428E400278431 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		38BD932515E44EC200278431 /* ADNUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNUser.h; sourceTree = "<group>"; };
+		38BD932615E44EC200278431 /* ADNUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNUser.m; sourceTree = "<group>"; };
+		38BD932C15E44F5900278431 /* ADNMention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNMention.h; sourceTree = "<group>"; };
+		38BD932D15E44F5900278431 /* ADNMention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNMention.m; sourceTree = "<group>"; };
+		38BD932F15E4523900278431 /* ADNHashTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNHashTag.h; sourceTree = "<group>"; };
+		38BD933015E4523900278431 /* ADNHashTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNHashTag.m; sourceTree = "<group>"; };
+		38BD933215E4524500278431 /* ADNLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNLink.h; sourceTree = "<group>"; };
+		38BD933315E4524500278431 /* ADNLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNLink.m; sourceTree = "<group>"; };
+		38BD933515E4524F00278431 /* ADNFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNFilter.h; sourceTree = "<group>"; };
+		38BD933615E4524F00278431 /* ADNFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNFilter.m; sourceTree = "<group>"; };
+		38BD933815E454A700278431 /* ADNImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNImage.h; sourceTree = "<group>"; };
+		38BD933915E454A700278431 /* ADNImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNImage.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		38BD925D15E428BE00278431 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				38BD931D15E432AF00278431 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		38BD925515E428BE00278431 = {
+			isa = PBXGroup;
+			children = (
+				38BD926A15E428BE00278431 /* objc-appdotnet */,
+				38BD926315E428BE00278431 /* Frameworks */,
+				38BD926115E428BE00278431 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		38BD926115E428BE00278431 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				38BD926015E428BE00278431 /* objc-appdotnet.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		38BD926315E428BE00278431 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				38BD926415E428BE00278431 /* Cocoa.framework */,
+				38BD926615E428BE00278431 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		38BD926615E428BE00278431 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				38BD926715E428BE00278431 /* AppKit.framework */,
+				38BD926815E428BE00278431 /* CoreData.framework */,
+				38BD926915E428BE00278431 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		38BD926A15E428BE00278431 /* objc-appdotnet */ = {
+			isa = PBXGroup;
+			children = (
+				38BD928115E428E400278431 /* app.net */,
+				38BD929515E428E400278431 /* JSONKit */,
+				38BD927615E428BE00278431 /* AppDelegate.h */,
+				38BD927715E428BE00278431 /* AppDelegate.m */,
+				38BD927915E428BF00278431 /* MainMenu.xib */,
+				38BD926B15E428BE00278431 /* Supporting Files */,
+			);
+			path = "objc-appdotnet";
+			sourceTree = "<group>";
+		};
+		38BD926B15E428BE00278431 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				38BD926C15E428BE00278431 /* objc-appdotnet-Info.plist */,
+				38BD926D15E428BE00278431 /* InfoPlist.strings */,
+				38BD927015E428BE00278431 /* main.m */,
+				38BD927215E428BE00278431 /* objc-appdotnet-Prefix.pch */,
+				38BD927315E428BE00278431 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		38BD928115E428E400278431 /* app.net */ = {
+			isa = PBXGroup;
+			children = (
+				3801A75C15E50C6900CF720C /* ISO8601DateFormatter.h */,
+				3801A75D15E50C6900CF720C /* ISO8601DateFormatter.m */,
+				38BD928215E428E400278431 /* AppDotNet.h */,
+				38BD928315E428E400278431 /* AppDotNet.m */,
+				38BD932515E44EC200278431 /* ADNUser.h */,
+				38BD932615E44EC200278431 /* ADNUser.m */,
+				38BD932C15E44F5900278431 /* ADNMention.h */,
+				38BD932D15E44F5900278431 /* ADNMention.m */,
+				38BD932F15E4523900278431 /* ADNHashTag.h */,
+				38BD933015E4523900278431 /* ADNHashTag.m */,
+				38BD933215E4524500278431 /* ADNLink.h */,
+				38BD933315E4524500278431 /* ADNLink.m */,
+				38BD933515E4524F00278431 /* ADNFilter.h */,
+				38BD933615E4524F00278431 /* ADNFilter.m */,
+				38BD933815E454A700278431 /* ADNImage.h */,
+				38BD933915E454A700278431 /* ADNImage.m */,
+				3801A76015E52CD300CF720C /* ADNURLConnection.h */,
+				3801A76115E52CD300CF720C /* ADNURLConnection.m */,
+			);
+			path = app.net;
+			sourceTree = "<group>";
+		};
+		38BD929515E428E400278431 /* JSONKit */ = {
+			isa = PBXGroup;
+			children = (
+				38BD929615E428E400278431 /* CHANGELOG.md */,
+				38BD929715E428E400278431 /* JSONKit.h */,
+				38BD929815E428E400278431 /* JSONKit.m */,
+				38BD929915E428E400278431 /* README.md */,
+			);
+			path = JSONKit;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		38BD925F15E428BE00278431 /* objc-appdotnet */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 38BD927E15E428BF00278431 /* Build configuration list for PBXNativeTarget "objc-appdotnet" */;
+			buildPhases = (
+				38BD925C15E428BE00278431 /* Sources */,
+				38BD925D15E428BE00278431 /* Frameworks */,
+				38BD925E15E428BE00278431 /* Resources */,
+				38BD931F15E432BF00278431 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "objc-appdotnet";
+			productName = "objc-appdotnet";
+			productReference = 38BD926015E428BE00278431 /* objc-appdotnet.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		38BD925715E428BE00278431 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0440;
+				ORGANIZATIONNAME = "Akash Garg";
+			};
+			buildConfigurationList = 38BD925A15E428BE00278431 /* Build configuration list for PBXProject "objc-appdotnet" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				English,
+			);
+			mainGroup = 38BD925515E428BE00278431;
+			productRefGroup = 38BD926115E428BE00278431 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				38BD925F15E428BE00278431 /* objc-appdotnet */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		38BD925E15E428BE00278431 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				38BD926F15E428BE00278431 /* InfoPlist.strings in Resources */,
+				38BD927515E428BE00278431 /* Credits.rtf in Resources */,
+				38BD927B15E428BF00278431 /* MainMenu.xib in Resources */,
+				38BD92A315E428E400278431 /* CHANGELOG.md in Resources */,
+				38BD92A515E428E400278431 /* README.md in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		38BD925C15E428BE00278431 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				38BD927115E428BE00278431 /* main.m in Sources */,
+				38BD927815E428BE00278431 /* AppDelegate.m in Sources */,
+				38BD929A15E428E400278431 /* AppDotNet.m in Sources */,
+				38BD92A415E428E400278431 /* JSONKit.m in Sources */,
+				38BD932715E44EC200278431 /* ADNUser.m in Sources */,
+				38BD932E15E44F5900278431 /* ADNMention.m in Sources */,
+				38BD933115E4523900278431 /* ADNHashTag.m in Sources */,
+				38BD933415E4524600278431 /* ADNLink.m in Sources */,
+				38BD933715E4524F00278431 /* ADNFilter.m in Sources */,
+				38BD933A15E454A700278431 /* ADNImage.m in Sources */,
+				3801A75E15E50C6900CF720C /* ISO8601DateFormatter.m in Sources */,
+				3801A76215E52CD400CF720C /* ADNURLConnection.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		38BD926D15E428BE00278431 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				38BD926E15E428BE00278431 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		38BD927315E428BE00278431 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				38BD927415E428BE00278431 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		38BD927915E428BF00278431 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				38BD927A15E428BF00278431 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		38BD927C15E428BF00278431 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		38BD927D15E428BF00278431 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		38BD927F15E428BF00278431 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+					"\"$(SRCROOT)/..\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "objc-appdotnet/objc-appdotnet-Prefix.pch";
+				INFOPLIST_FILE = "objc-appdotnet/objc-appdotnet-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		38BD928015E428BF00278431 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+					"\"$(SRCROOT)/..\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "objc-appdotnet/objc-appdotnet-Prefix.pch";
+				INFOPLIST_FILE = "objc-appdotnet/objc-appdotnet-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		38BD925A15E428BE00278431 /* Build configuration list for PBXProject "objc-appdotnet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				38BD927C15E428BF00278431 /* Debug */,
+				38BD927D15E428BF00278431 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		38BD927E15E428BF00278431 /* Build configuration list for PBXNativeTarget "objc-appdotnet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				38BD927F15E428BF00278431 /* Debug */,
+				38BD928015E428BF00278431 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 38BD925715E428BE00278431 /* Project object */;
+}
