@@ -72,24 +72,24 @@
 
     // load mentions
     self.mentions = [NSMutableArray array];
-    NSArray *mentions = [entities objectForKey:MENTIONS_KEY];
-    for (NSDictionary *md in mentions) {
+    NSArray *mentions_arr = [entities objectForKey:MENTIONS_KEY];
+    for (NSDictionary *md in mentions_arr) {
         ADNMention *m = [ADNMention mentionFromJSONDictionary:md];
         [self.mentions addObject:m];
     }
     
     // load hashtags
     self.hashtags = [NSMutableArray array];
-    NSArray *hashtags = [entities objectForKey:HASHTAGS_KEY];
-    for (NSDictionary *hd in hashtags) {
+    NSArray *hashtags_arr = [entities objectForKey:HASHTAGS_KEY];
+    for (NSDictionary *hd in hashtags_arr) {
         ADNHashTag *tag = [ADNHashTag hashtagFromJSONDictionary:hd];
         [self.hashtags addObject:tag];
     }
     
     // load links
     self.links = [NSMutableArray array];
-    NSArray *links = [entities objectForKey:LINKS_KEY];
-    for (NSDictionary *ld in links) {
+    NSArray *links_arr = [entities objectForKey:LINKS_KEY];
+    for (NSDictionary *ld in links_arr) {
         ADNLink *link = [ADNLink linkFromJSONDictionary:ld];
         [self.links addObject:link];
     }

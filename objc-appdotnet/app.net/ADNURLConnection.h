@@ -13,9 +13,11 @@
 // Unique powers of two for each flag so that we can bitwise OR them to get the
 // combination of response types.
 enum ADNResponseType {
-    IS_USER = 1, // If data IS the "user" object
-    HAS_USER = 2, // If data has a "user" object
-    HAS_SCOPES = 4, // Has info about token "scopes" 
+    LIST = 0x01,  // top level is a list
+    DICT = 0x02, // top level is a dictionary
+    IS_USER = 0x04, // If data IS the "user" object
+    HAS_USER = 0x08, // If data has a "user" object
+    HAS_SCOPES = 0x10, // Has info about token "scopes" 
 };
 
 //------------------------------------------------------------------------------

@@ -30,7 +30,23 @@
     
     AppDotNet *engine = [[AppDotNet alloc] initWithDelegate:self accessToken:token];
     
-    [engine checkCurrentToken];
+    //[engine checkCurrentToken];
+    //[engine getUser:6581];
+    
+    //[engine followUser:6581];
+    //[engine unfollowUser:6581];
+    
+    //[engine followedByMe];
+    //[engine followedByUsername:@"@terhechte"];
+    
+    //[engine followersOfMe];
+    //[engine followersOfUsername:@"@akg"];
+    
+    //[engine muteUserWithUsername:@"@terhechte"];
+    //[engine unmuteUserWithUsername:@"@terhechte"];
+    //[engine unmuteUserWithUsername:@"@spacekatgal"];
+    
+    //[engine mutedUsers];
 }
 
 //------------------------------------------------------------------------------
@@ -45,6 +61,23 @@
 - (void) requestFailed:(NSError *)error forRequestUUID:(NSString *)uuid
 {
     NSLog(@"Failed!");
+    
+    NSDictionary *userInfo = [error userInfo];
+    
+    NSString *domain = [error domain];
+    
+    if ([domain compare:@"ADN"] == NSOrderedSame) {
+        NSLog(@"Error: %@", [userInfo objectForKey:@"message"]);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+- (void) receivedUsers:(NSArray *)users forRequestUUID:(NSString *)uuid
+{
+    for (ADNUser *user in users) {
+        NSLog(@"got user: %@", user.username);
+    }
 }
 
 //------------------------------------------------------------------------------

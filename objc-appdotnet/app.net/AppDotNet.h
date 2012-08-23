@@ -47,6 +47,11 @@
 #define LEN_KEY                 @"len"
 #define COUNTS_KEY              @"counts"
 #define USER_KEY                @"user"
+#define ERROR_KEY               @"error"
+#define CODE_KEY                @"code"
+#define MESSAGE_KEY             @"message"
+
+#define MY_USERID               @"me"
 
 #define ADN_DATE_FORMAT         @"yyyy-MM-dd'T'HH:mm:ss'Z'"
 
@@ -73,6 +78,8 @@
 - (void) requestFailed:(NSError*)error forRequestUUID:(NSString*)uuid;
 
 - (void) receivedUser:(ADNUser*)user forRequestUUID:(NSString*)uuid;
+
+- (void) receivedUsers:(NSArray*)users forRequestUUID:(NSString*)uuid;
 
 @end
 
@@ -115,6 +122,38 @@
 // Returns info about the current OAuth Token and current User object. Calls
 // the delegate's tokenUser method.
 - (NSString*) checkCurrentToken;
+
+// Get a user with the given ID. 
+- (NSString*) getUserWithID:(NSUInteger)uid;
+- (NSString*) getUserWithUsername:(NSString*)username;
+- (NSString*) getMe;
+
+// Follow the user with the given uid.
+- (NSString*) followUserWithID:(NSUInteger)uid;
+- (NSString*) followUserWithUsername:(NSString*)username;
+
+// Unfollow a user with the given uid.
+- (NSString*) unfollowUserWithID:(NSUInteger)uid;
+- (NSString*) unfollowUserWithUsername:(NSString*)username;
+
+// Get the list of users the given user is following.
+- (NSString*) followedByID:(NSUInteger)uid;
+- (NSString*) followedByUsername:(NSString*)username;
+- (NSString*) followedByMe;
+
+// Get a list of users following the given user.
+- (NSString*) followersOfID:(NSUInteger)uid;
+- (NSString*) followersOfUsername:(NSString*)username;
+- (NSString*) followersOfMe;
+
+// Mute/Unmute methods.
+- (NSString*) muteUserWithID:(NSUInteger)uid;
+- (NSString*) muteUserWithUsername:(NSString*)username;
+- (NSString*) unmuteUserWithID:(NSUInteger)uid;
+- (NSString*) unmuteUserWithUsername:(NSString*)username;
+
+// Get the list of muted users.
+- (NSString*) mutedUsers;
 
 @end
 
