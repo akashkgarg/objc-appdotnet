@@ -11,6 +11,8 @@
 
 @implementation ADNHashTag
 
+@synthesize tag, pos, len;
+
 //------------------------------------------------------------------------------
 
 + (id) hashtagFromJSONDictionary:(NSDictionary *)dict

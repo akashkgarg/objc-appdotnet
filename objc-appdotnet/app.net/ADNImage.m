@@ -11,6 +11,8 @@
 
 @implementation ADNImage
 
+@synthesize width, height, url;
+
 //------------------------------------------------------------------------------
 
 + (id) imageFromJSONDictionary:(NSDictionary *)dict

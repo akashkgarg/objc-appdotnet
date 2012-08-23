@@ -11,6 +11,8 @@
 
 @implementation ADNLink
 
+@synthesize anchorText, url, pos, len;
+
 //------------------------------------------------------------------------------
 
 + (id) linkFromJSONDictionary:(NSDictionary*)dict
