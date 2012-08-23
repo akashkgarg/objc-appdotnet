@@ -118,8 +118,8 @@ more than happy to hear from you.
 ## Author
 
 Akash Garg
--@akg via app.net
--akg2110@columbia.edu via email
+- @akg via app.net
+- akg2110@columbia.edu via email
 
 ## License
 
