@@ -111,6 +111,8 @@ if things are not properly formatted, it's likely that the app will crash.
   `writePost` method.
 - The `includeUser`, `includeAnnotations`, and `includeReplies` flags for
   stream methods do not work. 
+- Latest App.Net changes include responses that contain a "meta" value. This
+  information is ignored currently.
 
 Please let me know if you find any bugs/issues while using this library. I'd be
 more than happy to hear from you. 

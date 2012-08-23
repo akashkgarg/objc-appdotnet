@@ -46,6 +46,8 @@
     //[engine checkCurrentToken];
     //[engine getUserWithID:6581];
     
+    [engine getUserWithUsername:@"@blahblah"];
+    
     //[engine followUserWithID:6581];
     //[engine unfollowUserWithID:6581];
     
@@ -76,7 +78,7 @@
     
     //[engine globalStreamSinceID:-1 beforeID:-1 count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
     
-    [engine taggedPostsWithTag:@"gamedev" sinceID:-1 beforeID:-1 count:20 includeUser:NO includeAnnotations:NO includeReplies:NO];
+    //[engine taggedPostsWithTag:@"gamedev" sinceID:-1 beforeID:-1 count:20 includeUser:NO includeAnnotations:NO includeReplies:NO];
 }
 
 //------------------------------------------------------------------------------

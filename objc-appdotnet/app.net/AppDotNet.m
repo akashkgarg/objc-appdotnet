@@ -106,7 +106,7 @@
     }
 
     if (responseType & DICT) {
-        NSDictionary *dataDict = [data objectFromJSONData];
+        NSDictionary *dataDict = [[data objectFromJSONData] objectForKey:DATA_KEY];
 
         NSAssert(dataDict, @"No valid dictionary");
 
@@ -124,7 +124,7 @@
         }
 
     } else if (responseType & LIST) {
-        NSArray *array = [data objectFromJSONData];
+        NSArray *array = [[data objectFromJSONData] objectForKey:DATA_KEY];
         [self parseArray:array responseType:responseType reportWithID:uuid];
     }
     
