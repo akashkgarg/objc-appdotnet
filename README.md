@@ -19,43 +19,41 @@ project's source.
 The main API entry-point to access the App.Net API is the `AppDotNet` object.
 An example of usage is shown in AppDelegate.m of the included project. 
 
-`
-AppDotNet *engine = [[AppDotNet alloc] initWithDelegate:self accessToken:token];
+    AppDotNet *engine = [[AppDotNet alloc] initWithDelegate:self accessToken:token];
 
-[engine checkCurrentToken];
-[engine getUserWithUsername:@"@terhechte"];
+    [engine checkCurrentToken];
+    [engine getUserWithUsername:@"@terhechte"];
 
-[engine followUserWithUsername:@"@terhechte"];
-[engine unfollowUserWithID:6581];
+    [engine followUserWithUsername:@"@terhechte"];
+    [engine unfollowUserWithID:6581];
 
-[engine followedByMe];
-[engine followedByUsername:@"@terhechte"];
+    [engine followedByMe];
+    [engine followedByUsername:@"@terhechte"];
 
-[engine followersOfMe];
-[engine followersOfUsername:@"@akg"];
+    [engine followersOfMe];
+    [engine followersOfUsername:@"@akg"];
 
-[engine muteUserWithUsername:@"@terhechte"];
-[engine unmuteUserWithUsername:@"@terhechte"];
-[engine unmuteUserWithUsername:@"@spacekatgal"];
+    [engine muteUserWithUsername:@"@terhechte"];
+    [engine unmuteUserWithUsername:@"@terhechte"];
+    [engine unmuteUserWithUsername:@"@spacekatgal"];
 
-[engine mutedUsers];
+    [engine mutedUsers];
 
-[engine writePost:@"HELLLO WORLD!" 
-        replyToPostWithID:-1 annotations:nil links:nil];
+    [engine writePost:@"HELLLO WORLD!" 
+            replyToPostWithID:-1 annotations:nil links:nil];
 
-[engine postsByMe];
+    [engine postsByMe];
 
-[engine postsMentioningMe];
+    [engine postsMentioningMe];
 
-[engine myStreamSinceID:152000 beforeID:-1 
-    count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
+    [engine myStreamSinceID:152000 beforeID:-1 
+        count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
 
-[engine globalStreamSinceID:-1 beforeID:-1 
-    count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
+    [engine globalStreamSinceID:-1 beforeID:-1 
+        count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
 
-[engine taggedPostsWithTag:@"gamedev" sinceID:-1 beforeID:-1 
-    count:20 includeUser:NO includeAnnotations:NO includeReplies:NO]; 
-`
+    [engine taggedPostsWithTag:@"gamedev" sinceID:-1 beforeID:-1 
+        count:20 includeUser:NO includeAnnotations:NO includeReplies:NO]; 
 
 *NOTE*: You initialize the main AppDotNet interface with an access token for
 your app and a delegate. The delegate is used for callbacks, see the "Client
@@ -68,8 +66,8 @@ App.Net uses standard OAuth2 for authentication. This library does not provide
 functions to do authentication via OAuth2. There are plenty of other libraries
 that are better suited for this: 
 
-    - [OAuth2Client](https://github.com/nxtbgthng/OAuth2Client)
-    - [OAConsumer](http://code.google.com/p/oauthconsumer/)
+- [OAuth2Client](https://github.com/nxtbgthng/OAuth2Client)
+- [OAConsumer](http://code.google.com/p/oauthconsumer/)
 
 You may use the any standard OAuth2 authentication method. All that is required
 for objc-appdotnet is the access token you receive. 
@@ -111,6 +109,8 @@ if things are not properly formatted, it's likely that the app will crash.
   `writePost` method.
 - The `includeUser`, `includeAnnotations`, and `includeReplies` flags for
   stream methods do not work. 
+- Latest App.Net changes include responses that contain a "meta" value. This
+  information is ignored currently.
 
 Please let me know if you find any bugs/issues while using this library. I'd be
 more than happy to hear from you. 
