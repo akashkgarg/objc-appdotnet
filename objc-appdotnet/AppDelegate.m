@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "app.net/AppDotNet.h"
+#import "AppDotNet.h"
 #import "ADNUser.h"
 #import "ADNPost.h"
 
@@ -24,7 +24,19 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    //NSURL *url = [NSURL URLWithString:@"https://alpha.app.net/oauth/authenticate?client_id=adcmYXNbVKDSkcQZMhejFmqp6YSnarPp&response_type=token&redirect_uri=http://objc-appdotnet.akashkgarg.com&scope=stream%20email%20write_post%20follow%20messages%20export"];
+    // Do some OAuth2 authentication to get a access token for testing. I do
+    // this, by first hard-coding my client_id and calling the URL below. This
+    // will open the link in a browser and once I sign-in and authorize, will
+    // redirect me to the specified redirect_url. That url will contain in it's
+    // GET parameter the access_token, which I copy and paste here. 
+
+    //NSString *client_id = @"";
+    //NSString *redirect_uri = @"";
+    //NSString *scopes = @"stream%20email%20write_post%20follow%20messages%20export";
+
+    //NSString *uri = [NSString stringWithFormat:@"https://alpha.app.net/oauth/authenticate?client_id=%@&response_type=token&redirect_uri%@&scope=%@", client_id, redirect_uri, scopes];
+
+    //NSURL *url = [NSURL URLWithString:uri];
     //[[NSWorkspace sharedWorkspace] openURL:url];
     
     NSString *token = @"AQAAAAAAAFhsSvxsSxprq-3kK4PY3c_JvSaF7nApwPHxhHaY7qGwxZIKJd6EFdRGdlZYO0s6mat3UIWQ6tY1qMOGjRecPEnnAQ";
@@ -32,10 +44,10 @@
     AppDotNet *engine = [[AppDotNet alloc] initWithDelegate:self accessToken:token];
     
     //[engine checkCurrentToken];
-    //[engine getUser:6581];
+    //[engine getUserWithID:6581];
     
-    //[engine followUser:6581];
-    //[engine unfollowUser:6581];
+    //[engine followUserWithID:6581];
+    //[engine unfollowUserWithID:6581];
     
     //[engine followedByMe];
     //[engine followedByUsername:@"@terhechte"];
@@ -81,12 +93,15 @@
     NSLog(@"Failed!");
     
     NSDictionary *userInfo = [error userInfo];
-    
     NSString *domain = [error domain];
+    NSUInteger code = [error code];
     
     if ([domain compare:@"ADN"] == NSOrderedSame) {
-        NSLog(@"Error: %@", [userInfo objectForKey:@"message"]);
+        NSLog(@"ADN Error: %ld - %@", code, [userInfo objectForKey:@"message"]);
+    } else if ([domain compare:@"HTTP"] == NSOrderedSame) {
+        NSLog(@"HTTP Error: %ld - %@", code, [userInfo objectForKey:@"message"]);
     }
+    
 }
 
 //------------------------------------------------------------------------------

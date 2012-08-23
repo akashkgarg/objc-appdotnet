@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 Akash Garg. All rights reserved.
 //
 
-#import "AppDotNet.h"
 #import "ADNImage.h"
+#import "ADNConstants.h"
 
 @implementation ADNImage
 

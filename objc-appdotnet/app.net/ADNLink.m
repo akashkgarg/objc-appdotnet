@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 Akash Garg. All rights reserved.
 //
 
-#import "AppDotNet.h"
 #import "ADNLink.h"
 #import "JSONKit.h"
+#import "ADNConstants.h"
 
 @implementation ADNLink
 

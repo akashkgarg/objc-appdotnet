@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 Akash Garg. All rights reserved.
 //
 
+#import "ADNConstants.h"
 #import "ADNPost.h"
-#import "AppDotNet.h"
 #import "ADNMention.h"
 #import "ADNLink.h"
 #import "ADNHashTag.h"

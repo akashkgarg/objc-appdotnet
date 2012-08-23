@@ -6,7 +6,8 @@
 //  Copyright (c) 2012 Akash Garg. All rights reserved.
 //
 
-#import "AppDotNet.h"
+#import "ADNConstants.h"
+
 #import "ADNUser.h"
 #import "JSONKit.h"
 

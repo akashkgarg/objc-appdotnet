@@ -78,6 +78,7 @@
 		38BD933615E4524F00278431 /* ADNFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNFilter.m; sourceTree = "<group>"; };
 		38BD933815E454A700278431 /* ADNImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNImage.h; sourceTree = "<group>"; };
 		38BD933915E454A700278431 /* ADNImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNImage.m; sourceTree = "<group>"; };
+		38CE750A15E652D50048C231 /* ADNConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNConstants.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +177,7 @@
 				3801A76115E52CD300CF720C /* ADNURLConnection.m */,
 				3801A76315E5ABA200CF720C /* ADNPost.h */,
 				3801A76415E5ABA200CF720C /* ADNPost.m */,
+				38CE750A15E652D50048C231 /* ADNConstants.h */,
 			);
 			path = app.net;
 			sourceTree = "<group>";
