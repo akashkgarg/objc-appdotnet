@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "app.net/AppDotNet.h"
 #import "ADNUser.h"
+#import "ADNPost.h"
 
 @implementation AppDelegate
 
@@ -47,6 +48,23 @@
     //[engine unmuteUserWithUsername:@"@spacekatgal"];
     
     //[engine mutedUsers];
+    
+    //[engine writePost:@"HELLLO WORLD!" replyToPostWithID:-1 annotations:nil links:nil];
+    
+    //[engine postWithID:50];
+    //[engine deletePostWithID:50];
+    
+    //[engine repliesToPostWithID:121511];
+    //[engine repliesToPostWithID:50];
+    //[engine postsByMe];
+    
+    //[engine postsMentioningMe];
+    
+    //[engine myStreamSinceID:152000 beforeID:-1 count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
+    
+    //[engine globalStreamSinceID:-1 beforeID:-1 count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
+    
+    [engine taggedPostsWithTag:@"gamedev" sinceID:-1 beforeID:-1 count:20 includeUser:NO includeAnnotations:NO includeReplies:NO];
 }
 
 //------------------------------------------------------------------------------
@@ -77,6 +95,22 @@
 {
     for (ADNUser *user in users) {
         NSLog(@"got user: %@", user.username);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+- (void) receivedPost:(ADNPost *)post forRequestUUID:(NSString *)uuid
+{
+    NSLog(@"Got Post: %@", post.text);
+}
+
+//------------------------------------------------------------------------------
+
+- (void) receivedPosts:(NSArray *)posts forRequestUUID:(NSString *)uuid
+{
+    for (ADNPost *post in posts) {
+        NSLog(@"got post: %ld - %@", post.postId, post.text);
     }
 }
 

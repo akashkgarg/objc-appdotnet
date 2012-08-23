@@ -8,6 +8,7 @@
 
 #import "AppDotNet.h"
 #import "ADNLink.h"
+#import "JSONKit.h"
 
 @implementation ADNLink
 
@@ -46,6 +47,26 @@
     self.len = l;
 
     return self;
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) asJSONString
+{
+    return [[self asDictionary] JSONString];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSDictionary*) asDictionary
+{
+    NSMutableDictionary *dict = [NSDictionary dictionary];
+    [dict setObject:self.anchorText forKey:TEXT_KEY];
+    [dict setObject:[self.url description] forKey:URL_KEY];
+    [dict setObject:[NSString stringWithFormat:@"%ld", self.pos] forKey:POS_KEY];
+    [dict setObject:[NSString stringWithFormat:@"%ld", self.len] forKey:LEN_KEY];
+    
+    return dict;
 }
 
 //------------------------------------------------------------------------------

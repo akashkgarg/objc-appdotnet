@@ -10,6 +10,8 @@
 #import "ADNUser.h"
 #import "JSONKit.h"
 #import "ADNUser.h"
+#import "ADNLink.h"
+#import "ADNPost.h"
 #import "ADNURLConnection.h"
 
 @implementation AppDotNet
@@ -52,22 +54,42 @@
 
 //------------------------------------------------------------------------------
 
+- (void) parsePost:(NSDictionary*)postDict reportWithID:(NSString*)uuid
+{
+    // create the post
+    ADNPost *post = [ADNPost postFromJSONDictionary:postDict];
+
+    // report to delegate.
+    [_delegate receivedPost:post forRequestUUID:uuid];
+}
+
+//------------------------------------------------------------------------------
+
 - (void) parseArray:(NSArray*)array 
        responseType:(NSUInteger)responseType
        reportWithID:(NSString*)uuid
 {
     NSMutableArray *result = [NSMutableArray array];
 
-    for (id obj in array) {
-        if (responseType & IS_USER) {
-            NSDictionary *dict = (NSDictionary*)obj;
+    // List is all users.
+    if (responseType & IS_USER) {
+        for (NSDictionary *dict in array) {
             ADNUser *user = [ADNUser userFromJSONDictionary:dict];
             [result addObject:user];
         }
+        // report to delegate.
+        [_delegate receivedUsers:result forRequestUUID:uuid];
     }
 
-    // report to delegate.
-    [_delegate receivedUsers:result forRequestUUID:uuid];
+    // List is all posts.
+    if (responseType & IS_POST) {
+        for (NSDictionary *dict in array) {
+            ADNPost *post = [ADNPost postFromJSONDictionary:dict];
+            [result addObject:post];
+        }
+        // report to delegate.
+        [_delegate receivedPosts:result forRequestUUID:uuid];
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -99,7 +121,11 @@
         } else if (responseType & IS_USER) {
             // parse the user and report to delegate.
             [self parseUser:dataDict reportWithID:uuid];
+        } else if (responseType & IS_POST) {
+            // parse post and report.
+            [self parsePost:dataDict reportWithID:uuid];
         }
+
     } else if (responseType & LIST) {
         NSArray *array = [data objectFromJSONData];
         [self parseArray:array responseType:responseType reportWithID:uuid];
@@ -120,6 +146,26 @@
 
 //------------------------------------------------------------------------------
 
+// Assembles the key-value pairs for the given params dictionary in a format
+// suitable for making GET/POST calls. Assumes that all keys adn values in
+// params are NSString.
+- (NSString*) assembleParamString:(NSDictionary*)params
+{
+    // Create the content string by iterating over the params dictionary. 
+    NSMutableArray *postStrings = [NSMutableArray array];
+    for (NSString *key in params) {
+        NSString *value = [params objectForKey:key];
+        NSString *postvalue = [NSString stringWithFormat:@"%@=%@", key, value];
+        [postStrings addObject:postvalue];
+    }
+    NSString *postString = 
+        [(NSArray*)postStrings componentsJoinedByString:@"&"];
+
+    return postString;
+}
+
+//------------------------------------------------------------------------------
+
 - (NSMutableURLRequest*) createRequest:(NSString*)uri
 {
     NSString *fulluri = [NSString stringWithFormat:@"%@%@", ADN_API_URL, uri];
@@ -128,6 +174,26 @@
         [[NSMutableURLRequest alloc] initWithURL:url];
     [self setHeader:request];
     
+    return request;
+}
+
+//------------------------------------------------------------------------------
+
+// This will create a GET request but also sets the appropriate GET paramets
+// from the dictionary of parameters given. It assumes that the keys and values
+// of the given "params" dictionary are all NSString.
+- (NSMutableURLRequest*) createRequest:(NSString*)uri 
+                                params:(NSDictionary*)params
+{
+    NSString *paramString = @"";
+
+    if (params)
+         paramString = [self assembleParamString:params];
+
+    NSString *fulluri = [NSString stringWithFormat:@"%@?%@", uri, paramString];
+
+    NSMutableURLRequest *request = [self createRequest:fulluri];
+
     return request;
 }
 
@@ -146,15 +212,9 @@
     
     // No need to assemble the POST content in the body.
     if (!params) return request;
-    
-    // Create the POST content string by iterative over the params dictionary. 
-    NSMutableArray *postStrings = [NSMutableArray array];
-    for (NSString *key in params) {
-        NSString *value = [params objectForKey:key];
-        NSString *postvalue = [NSString stringWithFormat:@"%@=%@", key, value];
-        [postStrings addObject:postvalue];
-    }
-    NSString *postString = [(NSArray*)postStrings componentsJoinedByString:@"&"];
+
+    // Get the params in a suitable format.
+    NSString *postString = [self assembleParamString:params];
     
     // Set the POST body. 
     [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
@@ -407,11 +467,264 @@
 
 //------------------------------------------------------------------------------
 
+- (NSString*) writePost:(NSString*)text
+      replyToPostWithID:(NSInteger)postId
+            annotations:(NSDictionary*)annotations
+                  links:(NSArray*)links
+{
+    NSString *uri = @"/stream/0/posts";
+
+    NSMutableDictionary *postValues = [NSMutableDictionary dictionary];
+    if (postId >= 0) {
+        NSString *replyToStr = [NSString stringWithFormat:@"%ld", postId];
+        [postValues setObject:replyToStr forKey:REPLY_TO_KEY];
+    }
+
+    if (annotations) {
+        NSString *str = [annotations JSONString];
+        [postValues setObject:str forKey:ANNOTATIONS_KEY];
+    }
+
+    if (links) {
+        NSMutableArray *linkDicts = [NSMutableArray array];
+        for (ADNLink *link in links) {
+            [linkDicts addObject:[link asDictionary]];
+        }
+        [postValues setObject:[linkDicts JSONString] forKey:LINKS_KEY];
+    }
+    
+    [postValues setObject:text forKey:TEXT_KEY];
+
+    NSMutableURLRequest *request = [self createPostRequest:uri 
+                                                    params:postValues];
+
+    enum ADNResponseType responseType = DICT | IS_POST;
+
+    return [self sendRequest:request responseType:responseType];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) postWithID:(NSUInteger)postId
+{
+    NSString *uri = [NSString stringWithFormat:@"/stream/0/posts/%ld", postId];
+
+    NSMutableURLRequest *request = [self createRequest:uri];
+
+    enum ADNResponseType responseType = DICT | IS_POST;
+
+    return [self sendRequest:request responseType:responseType];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) deletePostWithID:(NSUInteger)postId
+{
+    NSString *uri = [NSString stringWithFormat:@"/stream/0/posts/%ld", postId];
+
+    NSMutableURLRequest *request = [self createDeleteRequest:uri];
+
+    enum ADNResponseType responseType = DICT | IS_POST;
+
+    return [self sendRequest:request responseType:responseType];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) repliesToPostWithID:(NSUInteger)postId
+{
+    NSString *uri = 
+        [NSString stringWithFormat:@"/stream/0/posts/%ld/replies", postId];
+
+    NSMutableURLRequest *request = [self createRequest:uri];
+
+    enum ADNResponseType responseType = LIST | IS_POST;
+
+    return [self sendRequest:request responseType:responseType];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) postsByUserWithUsername:(NSString*)username
+{
+    NSString *uri = 
+        [NSString stringWithFormat:@"/stream/0/users/%@/posts/", username];
+
+    NSMutableURLRequest *request = [self createRequest:uri];
+
+    enum ADNResponseType responseType = LIST | IS_POST;
+
+    return [self sendRequest:request responseType:responseType];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) postsByUserWithID:(NSUInteger)uid
+{
+    NSString *str = [NSString stringWithFormat:@"%ld", uid];
+    return [self postsByUserWithUsername:str];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) postsByMe
+{
+    return [self postsByUserWithUsername:MY_USERID];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) postsMentioningUserWithUsername:(NSString*)username
+{
+    NSString *uri = 
+        [NSString stringWithFormat:@"/stream/0/users/%@/mentions", username];
+
+    NSMutableURLRequest *request = [self createRequest:uri];
+
+    enum ADNResponseType responseType = LIST | IS_POST;
+
+    return [self sendRequest:request responseType:responseType];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) postsMentioningUserWithID:(NSUInteger)uid
+{
+    NSString *str = [NSString stringWithFormat:@"%ld", uid];
+    return [self postsMentioningUserWithUsername:str];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) postsMentioningMe
+{
+    return [self postsMentioningUserWithUsername:MY_USERID];
+}
+
+//------------------------------------------------------------------------------
+
 - (NSString*) mutedUsers
 {
     NSString *uri = @"/stream/0/users/me/muted";
     NSMutableURLRequest *request = [self createRequest:uri];
     enum ADNResponseType responseType = LIST | IS_USER;
+    return [self sendRequest:request responseType:responseType];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSDictionary*) postParamsSinceID:(NSInteger)sinceId
+                           beforeID:(NSInteger)beforeId 
+                              count:(NSUInteger)count 
+                        includeUser:(BOOL)includeUser 
+                 includeAnnotations:(BOOL)includeAnnotations 
+                     includeReplies:(BOOL)includeReplies
+{
+    // Create params dictionary.
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+
+    if (sinceId >= 0) {
+        NSString *str = [NSString stringWithFormat:@"%ld", sinceId];
+        [params setObject:str forKey:SINCE_ID_KEY];
+    }
+    if (beforeId >= 0) {
+        NSString *str = [NSString stringWithFormat:@"%ld", beforeId];
+        [params setObject:str forKey:BEFORE_ID_KEY];
+    }
+
+    NSString *countStr = [NSString stringWithFormat:@"%ld", count];
+    [params setObject:countStr forKey:COUNT_KEY];
+
+    NSString *includeUserStr = NSStringFromBOOL(includeUser);
+    NSString *includeAnnotationsStr = NSStringFromBOOL(includeAnnotations);
+    NSString *includeRepliesStr = NSStringFromBOOL(includeReplies);
+
+    [params setObject:includeUserStr forKey:INCLUDE_USER_KEY];
+    [params setObject:includeAnnotationsStr forKey:INCLUDE_ANNOTATIONS_KEY];
+    [params setObject:includeRepliesStr forKey:INCLUDE_REPLIES_KEY];
+
+    return params;
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) myStreamSinceID:(NSInteger)sinceId 
+                     beforeID:(NSInteger)beforeId
+                        count:(NSUInteger)count
+                  includeUser:(BOOL)includeUser 
+           includeAnnotations:(BOOL)includeAnnotations
+               includeReplies:(BOOL)includeReplies
+{
+    NSString *uri = @"/stream/0/posts/stream";
+
+    // Create the dictionary of parameters
+    NSDictionary *params = [self postParamsSinceID:sinceId
+                                          beforeID:beforeId
+                                             count:count
+                                       includeUser:includeUser
+                                includeAnnotations:includeAnnotations
+                                    includeReplies:includeReplies];
+
+    // Create the Get request with parameters.
+    NSMutableURLRequest *request = [self createRequest:uri params:params];
+
+    enum ADNResponseType responseType = LIST | IS_POST;
+
+    return [self sendRequest:request responseType:responseType];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) globalStreamSinceID:(NSInteger)sinceId 
+                         beforeID:(NSInteger)beforeId 
+                            count:(NSUInteger)count 
+                      includeUser:(BOOL)includeUser 
+               includeAnnotations:(BOOL)includeAnnotations 
+                   includeReplies:(BOOL)includeReplies
+{
+    NSString *uri = @"/stream/0/posts/stream/global";
+
+    // Create the dictionary of parameters
+    NSDictionary *params = [self postParamsSinceID:sinceId
+                                          beforeID:beforeId
+                                             count:count
+                                       includeUser:includeUser
+                                includeAnnotations:includeAnnotations
+                                    includeReplies:includeReplies];
+
+    // Create the Get request with parameters.
+    NSMutableURLRequest *request = [self createRequest:uri params:params];
+
+    enum ADNResponseType responseType = LIST | IS_POST;
+
+    return [self sendRequest:request responseType:responseType];
+}
+
+//------------------------------------------------------------------------------
+
+- (NSString*) taggedPostsWithTag:(NSString*)tag
+                         sinceID:(NSInteger)sinceId 
+                        beforeID:(NSInteger)beforeId 
+                           count:(NSUInteger)count 
+                     includeUser:(BOOL)includeUser 
+              includeAnnotations:(BOOL)includeAnnotations 
+                  includeReplies:(BOOL)includeReplies
+{
+    NSString *uri = [NSString stringWithFormat:@"/stream/0/posts/tag/%@", tag];
+
+    // Create the dictionary of parameters
+    NSDictionary *params = [self postParamsSinceID:sinceId
+                                          beforeID:beforeId
+                                             count:count
+                                       includeUser:includeUser
+                                includeAnnotations:includeAnnotations
+                                    includeReplies:includeReplies];
+
+    // Create the Get request with parameters.
+    NSMutableURLRequest *request = [self createRequest:uri params:params];
+
+    enum ADNResponseType responseType = LIST | IS_POST;
+
     return [self sendRequest:request responseType:responseType];
 }
 

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3801A75E15E50C6900CF720C /* ISO8601DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3801A75D15E50C6900CF720C /* ISO8601DateFormatter.m */; };
 		3801A76215E52CD400CF720C /* ADNURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 3801A76115E52CD300CF720C /* ADNURLConnection.m */; };
+		3801A76515E5ABA200CF720C /* ADNPost.m in Sources */ = {isa = PBXBuildFile; fileRef = 3801A76415E5ABA200CF720C /* ADNPost.m */; };
 		38BD926F15E428BE00278431 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 38BD926D15E428BE00278431 /* InfoPlist.strings */; };
 		38BD927115E428BE00278431 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BD927015E428BE00278431 /* main.m */; };
 		38BD927515E428BE00278431 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 38BD927315E428BE00278431 /* Credits.rtf */; };
@@ -44,6 +45,8 @@
 		3801A75D15E50C6900CF720C /* ISO8601DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISO8601DateFormatter.m; sourceTree = "<group>"; };
 		3801A76015E52CD300CF720C /* ADNURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNURLConnection.h; sourceTree = "<group>"; };
 		3801A76115E52CD300CF720C /* ADNURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNURLConnection.m; sourceTree = "<group>"; };
+		3801A76315E5ABA200CF720C /* ADNPost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADNPost.h; sourceTree = "<group>"; };
+		3801A76415E5ABA200CF720C /* ADNPost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADNPost.m; sourceTree = "<group>"; };
 		38BD926015E428BE00278431 /* objc-appdotnet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "objc-appdotnet.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		38BD926415E428BE00278431 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		38BD926715E428BE00278431 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -171,6 +174,8 @@
 				38BD933915E454A700278431 /* ADNImage.m */,
 				3801A76015E52CD300CF720C /* ADNURLConnection.h */,
 				3801A76115E52CD300CF720C /* ADNURLConnection.m */,
+				3801A76315E5ABA200CF720C /* ADNPost.h */,
+				3801A76415E5ABA200CF720C /* ADNPost.m */,
 			);
 			path = app.net;
 			sourceTree = "<group>";
@@ -266,6 +271,7 @@
 				38BD933A15E454A700278431 /* ADNImage.m in Sources */,
 				3801A75E15E50C6900CF720C /* ISO8601DateFormatter.m in Sources */,
 				3801A76215E52CD400CF720C /* ADNURLConnection.m in Sources */,
+				3801A76515E5ABA200CF720C /* ADNPost.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,6 +18,7 @@ enum ADNResponseType {
     IS_USER = 0x04, // If data IS the "user" object
     HAS_USER = 0x08, // If data has a "user" object
     HAS_SCOPES = 0x10, // Has info about token "scopes" 
+    IS_POST = 0x20, 
 };
 
 //------------------------------------------------------------------------------

@@ -46,20 +46,36 @@
 #define POS_KEY                 @"pos"
 #define LEN_KEY                 @"len"
 #define COUNTS_KEY              @"counts"
+#define COUNT_KEY               @"count"
 #define USER_KEY                @"user"
 #define ERROR_KEY               @"error"
 #define CODE_KEY                @"code"
 #define MESSAGE_KEY             @"message"
+#define SOURCE_KEY              @"source"
+#define REPLY_TO_KEY            @"reply_to"
+#define LINK_KEY                @"link"
+#define THREAD_ID_KEY           @"thread_id"
+#define ANNOTATIONS_KEY         @"annotations"
+#define NUM_REPLIES_KEY         @"num_replies"
+#define IS_DELETED_KEY          @"is_deleted"
+#define SINCE_ID_KEY            @"since_id"
+#define BEFORE_ID_KEY           @"before_id"
+#define INCLUDE_USER_KEY        @"include_user"
+#define INCLUDE_ANNOTATIONS_KEY @"include_annotations"
+#define INCLUDE_REPLIES_KEY     @"include_replies"
 
 #define MY_USERID               @"me"
 
 #define ADN_DATE_FORMAT         @"yyyy-MM-dd'T'HH:mm:ss'Z'"
+
+#define NSStringFromBOOL(a)     (a ? @"1" : @"0")
 
 //------------------------------------------------------------------------------
 #pragma Forward Declarations
 //------------------------------------------------------------------------------
 
 @class ADNUser;
+@class ADNPost;
 
 //------------------------------------------------------------------------------
 
@@ -80,6 +96,10 @@
 - (void) receivedUser:(ADNUser*)user forRequestUUID:(NSString*)uuid;
 
 - (void) receivedUsers:(NSArray*)users forRequestUUID:(NSString*)uuid;
+
+- (void) receivedPost:(ADNPost*)post forRequestUUID:(NSString*)uuid;
+
+- (void) receivedPosts:(NSArray*)posts forRequestUUID:(NSString*)uuid;
 
 @end
 
@@ -154,6 +174,60 @@
 
 // Get the list of muted users.
 - (NSString*) mutedUsers;
+
+// replyTo can be -1 if not a reply to an existing post.
+// annotations - dictionary of additional annotations in post. Can be nil. 
+// links - an array of ADNLink objects that define the behavior of links in the
+// post text. Can be nil if no special formatting is required. 
+- (NSString*) writePost:(NSString*)text
+      replyToPostWithID:(NSInteger)postId
+            annotations:(NSDictionary*)annotations
+                  links:(NSArray*)links;
+
+- (NSString*) postWithID:(NSUInteger)postId;
+- (NSString*) deletePostWithID:(NSUInteger)postId;
+- (NSString*) repliesToPostWithID:(NSUInteger)postId;
+
+- (NSString*) postsByUserWithUsername:(NSString*)username;
+- (NSString*) postsByUserWithID:(NSUInteger)uid;
+- (NSString*) postsByMe;
+
+- (NSString*) postsMentioningUserWithUsername:(NSString*)username;
+- (NSString*) postsMentioningUserWithID:(NSUInteger)uid;
+- (NSString*) postsMentioningMe;
+
+// Get posts for user's personal stream.
+// sinceId - Include posts with post ids greater than this id. The response 
+//           will not include this post id. Set to -1 if you don't want to
+//           specify this. 
+// beforeId - Include posts with post ids smaller than this id. The response 
+//            will not include this post id. Set to -1 if you don't want to
+//            specify this. 
+// count - The number of Posts to return, up to a maximum of 200.
+// includeUser - Should the nested User object be included in the Post? 
+// includeAnnotations - Should the post annotations be included in the Post?
+// includeReplies - Should reply Posts be included in the results?
+- (NSString*) myStreamSinceID:(NSInteger)sinceId 
+                     beforeID:(NSInteger)beforeId
+                        count:(NSUInteger)count
+                  includeUser:(BOOL)includeUser 
+           includeAnnotations:(BOOL)includeAnnotations
+               includeReplies:(BOOL)includeReplies;
+
+- (NSString*) globalStreamSinceID:(NSInteger)sinceId
+                         beforeID:(NSInteger)beforeId
+                            count:(NSUInteger)count
+                      includeUser:(BOOL)includeUser
+               includeAnnotations:(BOOL)includeAnnotations
+                   includeReplies:(BOOL)includeReplies;
+
+- (NSString*) taggedPostsWithTag:(NSString*)tag
+                         sinceID:(NSInteger)sinceId 
+                        beforeID:(NSInteger)beforeId 
+                           count:(NSUInteger)count 
+                     includeUser:(BOOL)includeUser 
+              includeAnnotations:(BOOL)includeAnnotations 
+                  includeReplies:(BOOL)includeReplies;
 
 @end
 

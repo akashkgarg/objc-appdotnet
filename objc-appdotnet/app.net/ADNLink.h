@@ -31,4 +31,7 @@
                 pos:(NSUInteger)p
                 len:(NSUInteger)l;
 
+- (NSDictionary*) asDictionary;
+- (NSString*) asJSONString;
+
 @end
