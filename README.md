@@ -14,51 +14,213 @@ readily used in your applications.
 To use in your own projects, you will need everything inside the "app.net"
 folder. That folder contains all App.Net objects as well as the main API
 interface. JSON parsing is done using JSONKit, which is also included in the
-project's source. 
+project's source. I will soon replace this NSJSONSerialization, but for now
+still using JSONKit. 
 
 The main API entry-point to access the App.Net API is the `AppDotNet` object.
 An example of usage is shown in AppDelegate.m of the included project. 
 
-    AppDotNet *engine = [[AppDotNet alloc] initWithDelegate:self accessToken:token];
+    AppDotNet *engine = [[AppDotNet alloc] initWithAccessToken:token];
 
-    [engine checkCurrentToken];
-    [engine getUserWithUsername:@"@terhechte"];
+    [engine checkCurrentTokenWithBlock:^(ADNScope *scope, ADNUser *user, NSError *e) {
+        if (e) {
+            [self requestFailed:e];
+        } else {
+            [self receivedUser:user];
+        }
+    }];
+  
+    [engine userWithID:6581 block:^(ADNUser *user, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUser:user];
+        }
+        
+    }];
+  
+    [engine userWithUsername:@"blablah" block:^(ADNUser *user, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUser:user];
+        }
+        
+    }];
+  
+    [engine followUserWithID:6581 block:^(ADNUser *user, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUser:user];
+        }
+    }];
+  
+    [engine unfollowUserWithID:6581 block:^(ADNUser *user, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUser:user];
+        }
+    }];
+    
+    [engine followedByMeWithBlock:^(NSArray *users, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUsers:users];
+        }
+    }];
+    
+    [engine followedByUsername:@"@terhechte" block:^(NSArray *users, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUsers:users];
+        }
+    }];
+    
+    [engine followedByUsername:@"doesntexistthisuser" block:^(NSArray *users, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUsers:users];
+        }
+    }];
+  
+  
+    [engine followersOfMeWithBlock:^(NSArray *users, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUsers:users];
+        }
+    }];
+    
+    [engine followersOfUsername:@"@akg" block:^(NSArray *users, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUsers:users];
+        }
+    }];
+  
+  
+    [engine muteUserWithUsername:@"@terhechte" block:^(ADNUser *user, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUser:user];
+        }
+    }];
+    
+    [engine muteUserWithUsername:@"@spacekatgal" block:^(ADNUser *user, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUser:user];
+        }
+    }];
+  
+    [engine mutedUsersWithBlock:^(NSArray *users, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUsers:users];
+        }
+    }];
+    
+    [engine unmuteUserWithUsername:@"@terhechte" block:^(ADNUser *user, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUser:user];
+        }
+    }];
+    
+    [engine unmuteUserWithUsername:@"@spacekatgal" block:^(ADNUser *user, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedUser:user];
+        }
+    }];
+  
+    [engine writePost:@"HELLO WORLD! #testing" replyToPostWithID:-1 annotations:nil links:nil block:^(ADNPost *post, NSError *error) {
+        if (error) {
+            [self requestFailed:error];
+        } else {
+            [self receivedPost:post];
+        }
+    }];
+  
+    [engine postWithID:50 block:^(ADNPost *post, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPost:post];
+    }];
+    
+    [engine deletePostWithID:50 block:^(ADNPost *post, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPost:post];
+    }];
+  
+    [engine repliesToPostWithID:121511 block:^(NSArray *posts, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPosts:posts];
+    }];
+    
+    [engine repliesToPostWithID:50 block:^(NSArray *posts, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPosts:posts];
+    }];
+  
+    [engine postsByMeWithBlock:^(NSArray *posts, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPosts:posts];
+    }];
+    
+    [engine postsMentioningMeWithBlock:^(NSArray *posts, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPosts:posts];
+    }];
+  
+    [engine myStreamSinceID:152000 beforeID:-1 count:10 includeUser:NO includeAnnotations:NO includeReplies:NO block:^(NSArray *posts, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPosts:posts];
+    }];
+  
+    [engine globalStreamSinceID:-1 beforeID:-1 count:10 includeUser:NO includeAnnotations:NO includeReplies:NO block:^(NSArray *posts, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPosts:posts];
+    }];
 
-    [engine followUserWithUsername:@"@terhechte"];
-    [engine unfollowUserWithID:6581];
+    [engine taggedPostsWithTag:@"gamedev" sinceID:-1 beforeID:-1 count:20 includeUser:NO includeAnnotations:NO includeReplies:NO block:^(NSArray *posts, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPosts:posts];
+    }];
 
-    [engine followedByMe];
-    [engine followedByUsername:@"@terhechte"];
-
-    [engine followersOfMe];
-    [engine followersOfUsername:@"@akg"];
-
-    [engine muteUserWithUsername:@"@terhechte"];
-    [engine unmuteUserWithUsername:@"@terhechte"];
-    [engine unmuteUserWithUsername:@"@spacekatgal"];
-
-    [engine mutedUsers];
-
-    [engine writePost:@"HELLLO WORLD!" 
-            replyToPostWithID:-1 annotations:nil links:nil];
-
-    [engine postsByMe];
-
-    [engine postsMentioningMe];
-
-    [engine myStreamSinceID:152000 beforeID:-1 
-        count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
-
-    [engine globalStreamSinceID:-1 beforeID:-1 
-        count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
-
-    [engine taggedPostsWithTag:@"gamedev" sinceID:-1 beforeID:-1 
-        count:20 includeUser:NO includeAnnotations:NO includeReplies:NO]; 
 
 *NOTE*: You initialize the main AppDotNet interface with an access token for
-your app and a delegate. The delegate is used for callbacks, see the "Client
-Delegate Callbacks" section below. The access token is received after proper
-OAuth2 authentication of your app, see "Authentication" section below.
+your app. The responses from the App.Net API are then returned to you via the
+blocks that are passed into each API call. The access token is received after proper OAuth2 authentication of your app, see "Authentication" section below.
 
 ### Authentication
 
@@ -72,28 +234,10 @@ that are better suited for this:
 You may use the any standard OAuth2 authentication method. All that is required
 for objc-appdotnet is the access token you receive. 
 
-### Client Delegate Callbacks
-
-All API calls are notified asynchronously to the client using delegate
-callbacks. Your client must implement the ADNDelegate protocol, which contains
-specific callback functions when objects are received from App.Net API calls. 
-
-Each call to the `AppDotNet` object will make underlying calls to the App.Net
-REST API. Each call can make multiple callbacks for example if an API call
-returns both a `User` and a `Post`, then both `receivedUser:withRequestUUID`
-and `receivedPost:withRequestUUID:` delegate methods are called giving you the
-`User` and `Post` objects respectively. 
-
-Since all calls are asynchronous, each call to `AppDotNet` will return a unique
-identifier as an `NSString*`. This can be used by the client application to
-keep track of which delegate callbacks correspond to which API calls. Each
-delegate callback contains a `withRequestUUID` parameter, which contains the
-unique identifier corresponding to that API call. 
-
 ### Error Handling
 
-If there is an error with the API request, the delegate method
-`requestFailed:forRequestUUID` is called. This contains an `NSError` object.
+If there is an error with the API request, each call's block parameter "error"
+will be not nil. The error object is an instance of `NSError` class. 
 The error will either be an "HTTP" error or an error within the ADN API. Error
 type is indicated by the domain string "HTTP" or "ADN". Status code of error is
 also encoded in the `NSError` object. See the `AppDelegate.m` implementation
@@ -111,6 +255,7 @@ if things are not properly formatted, it's likely that the app will crash.
   stream methods do not work. 
 - Latest App.Net changes include responses that contain a "meta" value. This
   information is ignored currently.
+- Using JSONKit for JSON parsing instead of NSJSONSerialization
 
 Please let me know if you find any bugs/issues while using this library. I'd be
 more than happy to hear from you. 

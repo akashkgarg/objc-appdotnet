@@ -13,33 +13,18 @@
 #import "ADNHashTag.h"
 #import "ADNImage.h"
 #import "ADNMention.h"
+#import "ADNScope.h"
 #import "ADNConstants.h"
 
 //------------------------------------------------------------------------------
 
-// Note that all delegate methods have a "forRequestUUID" field, that contains
-// the unique UUID for each API call you request from the your client
-// application. This is because multiple callbacks can be triggered for a
-// particular API request and to keep track of which calls go with which
-// request, you can use the RequestUUID.
-//
-// Each API request call also returns the RequestUUID that you can keep track
-// of in your client application.
-
-@protocol ADNDelegate <NSObject>
-
-// Callback when something fails while making a API request.
-- (void) requestFailed:(NSError*)error forRequestUUID:(NSString*)uuid;
-
-- (void) receivedUser:(ADNUser*)user forRequestUUID:(NSString*)uuid;
-
-- (void) receivedUsers:(NSArray*)users forRequestUUID:(NSString*)uuid;
-
-- (void) receivedPost:(ADNPost*)post forRequestUUID:(NSString*)uuid;
-
-- (void) receivedPosts:(NSArray*)posts forRequestUUID:(NSString*)uuid;
-
-@end
+// Typedefs for block support.
+typedef void (^ADNReceivedScopeAndUser)(ADNScope *scope, ADNUser *user, 
+                                        NSError *e);
+typedef void (^ADNReceivedUser)(ADNUser *user, NSError *error);
+typedef void (^ADNReceivedUsers)(NSArray *users, NSError *error);
+typedef void (^ADNReceivedPost)(ADNPost *post, NSError *error);
+typedef void (^ADNReceivedPosts)(NSArray *posts, NSError *error);
 
 //------------------------------------------------------------------------------
 
@@ -50,91 +35,68 @@
 
 	// OAuth 2.0 stuff
     NSString *_accessToken;
-    
-    // Delegate callbacks.
-    id<ADNDelegate> _delegate;
-
-    // Active connections. 
-    NSMutableDictionary *_connections;
 }
 
 @property (retain) NSString* clientName;
 @property (retain) NSString* clientVersion;
 @property (readonly) NSString* accessToken;
 
-- (AppDotNet*) initWithDelegate:(id<ADNDelegate>)delegate
-                    accessToken:(NSString*)token;
+// Use this if you do not want to implement your own delegate class, but
+// instead want to call all API methods with blocks instead. 
+- (AppDotNet*) initWithAccessToken:(NSString*)token;
 
 //------------------------------------------------------------------------------
 #pragma mark -
 #pragma mark App.Net API Methods.
 //------------------------------------------------------------------------------
 
-// All API methods return a NSString* which indicates a unique key for the
-// request made. Each API method request can trigger multiple callbacks. The
-// callbacks will contain the key from which the request was made. This is so
-// that the user end application can keep track of which callbacks are
-// associated with which requests in the case that multiple requests are sent
-// asynchronously from the client. 
+// All API methods require a completion block that will be called with the
+// response data from app.net. If the response fails, the NSError object will
+// be non-nil.
+
+- (void) checkCurrentTokenWithBlock:(ADNReceivedScopeAndUser)block;
 
 //------------------------------------------------------------------------------
 
-// Checks the current client's token permission. 
-// Delegate Methods Called: 
-//          receivedUser:forRequestUUID:
-- (NSString*) checkCurrentToken;
+// Retrieving a user with given userid or name.
+- (void) userWithID:(NSUInteger)uid block:(ADNReceivedUser)block;
+- (void) userWithUsername:(NSString*)username block:(ADNReceivedUser)block;
+- (void) meWithBlock:(ADNReceivedUser)block;
 
 //------------------------------------------------------------------------------
-
-// Get a user with the given ID. 
-// Delegate Methods Called: 
-//          receivedUser:forRequestUUID:
-- (NSString*) getUserWithID:(NSUInteger)uid;
-- (NSString*) getUserWithUsername:(NSString*)username;
-- (NSString*) getMe;
 
 // Follow the user with the given uid.
-// Delegate Methods Called: 
-//          receivedUser:forRequestUUID:
-- (NSString*) followUserWithID:(NSUInteger)uid;
-- (NSString*) followUserWithUsername:(NSString*)username;
+- (void) followUserWithID:(NSUInteger)uid block:(ADNReceivedUser)block;
+- (void) followUserWithUsername:(NSString*)username 
+                          block:(ADNReceivedUser)block;
 
 // Unfollow a user with the given uid.
-// Delegate Methods Called: 
-//          receivedUser:forRequestUUID:
-- (NSString*) unfollowUserWithID:(NSUInteger)uid;
-- (NSString*) unfollowUserWithUsername:(NSString*)username;
+- (void) unfollowUserWithID:(NSUInteger)uid block:(ADNReceivedUser)block;
+- (void) unfollowUserWithUsername:(NSString*)username 
+                            block:(ADNReceivedUser)block;
 
 //------------------------------------------------------------------------------
 
 // Get the list of users the given user is following.
-// Delegate Methods Called: 
-//          receivedUsers:forRequestUUID:
-- (NSString*) followedByID:(NSUInteger)uid;
-- (NSString*) followedByUsername:(NSString*)username;
-- (NSString*) followedByMe;
+- (void) followedByID:(NSUInteger)uid block:(ADNReceivedUsers)block;
+- (void) followedByUsername:(NSString*)username block:(ADNReceivedUsers)block;
+- (void) followedByMeWithBlock:(ADNReceivedUsers)block;
 
 // Get a list of users following the given user.
-// Delegate Methods Called: 
-//          receivedUsers:forRequestUUID:
-- (NSString*) followersOfID:(NSUInteger)uid;
-- (NSString*) followersOfUsername:(NSString*)username;
-- (NSString*) followersOfMe;
+- (void) followersOfID:(NSUInteger)uid block:(ADNReceivedUsers)block;
+- (void) followersOfUsername:(NSString*)username block:(ADNReceivedUsers)block;
+- (void) followersOfMeWithBlock:(ADNReceivedUsers)block;
 
 //------------------------------------------------------------------------------
 
 // Mute/Unmute methods.
-// Delegate Methods Called: 
-//          receivedUser:forRequestUUID:
-- (NSString*) muteUserWithID:(NSUInteger)uid;
-- (NSString*) muteUserWithUsername:(NSString*)username;
-- (NSString*) unmuteUserWithID:(NSUInteger)uid;
-- (NSString*) unmuteUserWithUsername:(NSString*)username;
+- (void) muteUserWithID:(NSUInteger)uid block:(ADNReceivedUser)block;
+- (void) muteUserWithUsername:(NSString*)username block:(ADNReceivedUser)block;
+- (void) unmuteUserWithID:(NSUInteger)uid block:(ADNReceivedUser)block;
+- (void) unmuteUserWithUsername:(NSString*)username block:(ADNReceivedUser)blk;
 
 // Get the list of muted users.
-// Delegate Methods Called: 
-//          receivedUsers:forRequestUUID:
-- (NSString*) mutedUsers;
+- (void) mutedUsersWithBlock:(ADNReceivedUsers)block;
 
 //------------------------------------------------------------------------------
 
@@ -143,42 +105,35 @@
 // annotations - dictionary of additional annotations in post. Can be nil. 
 // links - an array of ADNLink objects that define the behavior of links in the
 //         post text. Can be nil if no special formatting is required. 
-// Delegate Methods Called: 
-//          receivedPost:forRequestUUID:
-- (NSString*) writePost:(NSString*)text
-      replyToPostWithID:(NSInteger)postId
-            annotations:(NSDictionary*)annotations
-                  links:(NSArray*)links;
+- (void) writePost:(NSString*)text
+ replyToPostWithID:(NSInteger)postId
+       annotations:(NSDictionary*)annotations
+             links:(NSArray*)links
+             block:(ADNReceivedPost)block;
 
 //------------------------------------------------------------------------------
 
-
 // Retrieving a post.
-// Delegate Methods Called: 
-//          receivedPost:forRequestUUID:
-- (NSString*) postWithID:(NSUInteger)postId;
-- (NSString*) deletePostWithID:(NSUInteger)postId;
+- (void) postWithID:(NSUInteger)postId block:(ADNReceivedPost)block;
+- (void) deletePostWithID:(NSUInteger)postId block:(ADNReceivedPost)block;
 
 // All replies to a post with given postID.
-// Delegate Methods Called: 
-//          receivedPosts:forRequestUUID:
-- (NSString*) repliesToPostWithID:(NSUInteger)postId;
+- (void) repliesToPostWithID:(NSUInteger)postId block:(ADNReceivedPosts)block;
 
 //------------------------------------------------------------------------------
 
 // All posts by a given user.
-// Delegate Methods Called: 
-//          receivedPosts:forRequestUUID:
-- (NSString*) postsByUserWithUsername:(NSString*)username;
-- (NSString*) postsByUserWithID:(NSUInteger)uid;
-- (NSString*) postsByMe;
+- (void) postsByUserWithUsername:(NSString*)username 
+                           block:(ADNReceivedPosts)blk;
+- (void) postsByUserWithID:(NSUInteger)uid block:(ADNReceivedPosts)block;
+- (void) postsByMeWithBlock:(ADNReceivedPosts)block;
 
 // All posts mentioning a given user.
-// Delegate Methods Called: 
-//          receivedPosts:forRequestUUID:
-- (NSString*) postsMentioningUserWithUsername:(NSString*)username;
-- (NSString*) postsMentioningUserWithID:(NSUInteger)uid;
-- (NSString*) postsMentioningMe;
+- (void) postsMentioningUserWithUsername:(NSString*)username
+                                   block:(ADNReceivedPosts)block;
+- (void) postsMentioningUserWithID:(NSUInteger)uid
+                             block:(ADNReceivedPosts)block;
+- (void) postsMentioningMeWithBlock:(ADNReceivedPosts)block;
 
 //------------------------------------------------------------------------------
 
@@ -193,37 +148,34 @@
 // includeUser - Should the nested User object be included in the Post? 
 // includeAnnotations - Should the post annotations be included in the Post?
 // includeReplies - Should reply Posts be included in the results?
-// Delegate Methods Called: 
-//          receivedPosts:forRequestUUID:
-- (NSString*) myStreamSinceID:(NSInteger)sinceId 
+- (void) myStreamSinceID:(NSInteger)sinceId 
                      beforeID:(NSInteger)beforeId
                         count:(NSUInteger)count
                   includeUser:(BOOL)includeUser 
            includeAnnotations:(BOOL)includeAnnotations
-               includeReplies:(BOOL)includeReplies;
+               includeReplies:(BOOL)includeReplies
+                        block:(ADNReceivedPosts)block;
 
 // Get post's in the global stream. See "myStreamSinceID:" above for meaning 
 // of parameters.
-// Delegate Methods Called: 
-//          receivedPosts:forRequestUUID:
-- (NSString*) globalStreamSinceID:(NSInteger)sinceId
+- (void) globalStreamSinceID:(NSInteger)sinceId
                          beforeID:(NSInteger)beforeId
                             count:(NSUInteger)count
                       includeUser:(BOOL)includeUser
                includeAnnotations:(BOOL)includeAnnotations
-                   includeReplies:(BOOL)includeReplies;
+                   includeReplies:(BOOL)includeReplies
+                            block:(ADNReceivedPosts)block;
 
 // All posts with a given hashtag. See "myStreamSinceID:" above for meaning 
 // of paramters.
-// Delegate Methods Called: 
-//          receivedPosts:forRequestUUID:
-- (NSString*) taggedPostsWithTag:(NSString*)tag
+- (void) taggedPostsWithTag:(NSString*)tag
                          sinceID:(NSInteger)sinceId 
                         beforeID:(NSInteger)beforeId 
                            count:(NSUInteger)count 
                      includeUser:(BOOL)includeUser 
               includeAnnotations:(BOOL)includeAnnotations 
-                  includeReplies:(BOOL)includeReplies;
+                  includeReplies:(BOOL)includeReplies
+                           block:(ADNReceivedPosts)block;
 
 @end
 

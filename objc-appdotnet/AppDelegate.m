@@ -30,67 +30,227 @@
     // redirect me to the specified redirect_url. That url will contain in it's
     // GET parameter the access_token, which I copy and paste here. 
 
-    //NSString *client_id = @"";
-    //NSString *redirect_uri = @"";
-    //NSString *scopes = @"stream%20email%20write_post%20follow%20messages%20export";
+    /*
+    NSString *client_id = @"";
+    NSString *redirect_uri = @"https://github.com/akashkgarg/objc-appdotnet";
+    NSString *scopes = @"stream%20email%20write_post%20follow%20messages%20export";
 
-    //NSString *uri = [NSString stringWithFormat:@"https://alpha.app.net/oauth/authenticate?client_id=%@&response_type=token&redirect_uri%@&scope=%@", client_id, redirect_uri, scopes];
+    NSString *uri = [NSString stringWithFormat:@"https://alpha.app.net/oauth/authenticate?client_id=%@&response_type=token&redirect_uri%@&scope=%@", client_id, redirect_uri, scopes];
 
-    //NSURL *url = [NSURL URLWithString:uri];
-    //[[NSWorkspace sharedWorkspace] openURL:url];
+    NSURL *url = [NSURL URLWithString:uri];
+    [[NSWorkspace sharedWorkspace] openURL:url];
+    */
     
-    NSString *token = @"AQAAAAAAAFhsSvxsSxprq-3kK4PY3c_JvSaF7nApwPHxhHaY7qGwxZIKJd6EFdRGdlZYO0s6mat3UIWQ6tY1qMOGjRecPEnnAQ";
+    NSString *token = @"AQAAAAAAAIAnhVGQcxX_8pt0_O7DMrVrlRL1jyZ4dKcvN8JOqrS4fudYChJxC_YcmtzM7ThrbsDkd4qlm3qlEn--mZE5ma5iBw";
     
-    AppDotNet *engine = [[AppDotNet alloc] initWithDelegate:self accessToken:token];
+    AppDotNet *engine = [[AppDotNet alloc] initWithAccessToken:token];
     
-    //[engine checkCurrentToken];
-    //[engine getUserWithID:6581];
+//    [engine checkCurrentTokenWithBlock:^(ADNScope *scope, ADNUser *user, NSError *e) {
+//        if (e) {
+//            [self requestFailed:e];
+//        } else {
+//            [self receivedUser:user];
+//        }
+//    }];
     
-    [engine getUserWithUsername:@"@blahblah"];
+//    [engine userWithID:6581 block:^(ADNUser *user, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUser:user];
+//        }
+//        
+//    }];
     
-    //[engine followUserWithID:6581];
-    //[engine unfollowUserWithID:6581];
+//    [engine userWithUsername:@"blablah" block:^(ADNUser *user, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUser:user];
+//        }
+//        
+//    }];
     
-    //[engine followedByMe];
-    //[engine followedByUsername:@"@terhechte"];
+//    [engine followUserWithID:6581 block:^(ADNUser *user, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUser:user];
+//        }
+//    }];
     
-    //[engine followersOfMe];
-    //[engine followersOfUsername:@"@akg"];
+//    [engine unfollowUserWithID:6581 block:^(ADNUser *user, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUser:user];
+//        }
+//    }];
+      
+//    [engine followedByMeWithBlock:^(NSArray *users, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUsers:users];
+//        }
+//    }];
+//    
+//    [engine followedByUsername:@"@terhechte" block:^(NSArray *users, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUsers:users];
+//        }
+//    }];
+//    
+//    [engine followedByUsername:@"doesntexistthisuser" block:^(NSArray *users, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUsers:users];
+//        }
+//    }];
     
-    //[engine muteUserWithUsername:@"@terhechte"];
-    //[engine unmuteUserWithUsername:@"@terhechte"];
-    //[engine unmuteUserWithUsername:@"@spacekatgal"];
     
-    //[engine mutedUsers];
+//    [engine followersOfMeWithBlock:^(NSArray *users, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUsers:users];
+//        }
+//    }];
+//    
+//    [engine followersOfUsername:@"@akg" block:^(NSArray *users, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUsers:users];
+//        }
+//    }];
     
-    //[engine writePost:@"HELLLO WORLD!" replyToPostWithID:-1 annotations:nil links:nil];
     
-    //[engine postWithID:50];
-    //[engine deletePostWithID:50];
+//    [engine muteUserWithUsername:@"@terhechte" block:^(ADNUser *user, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUser:user];
+//        }
+//    }];
+//    
+//    [engine muteUserWithUsername:@"@spacekatgal" block:^(ADNUser *user, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUser:user];
+//        }
+//    }];
     
-    //[engine repliesToPostWithID:121511];
-    //[engine repliesToPostWithID:50];
-    //[engine postsByMe];
+//    [engine mutedUsersWithBlock:^(NSArray *users, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUsers:users];
+//        }
+//    }];
+//    
+//    [engine unmuteUserWithUsername:@"@terhechte" block:^(ADNUser *user, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUser:user];
+//        }
+//    }];
+//    
+//    [engine unmuteUserWithUsername:@"@spacekatgal" block:^(ADNUser *user, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedUser:user];
+//        }
+//    }];
     
-    //[engine postsMentioningMe];
+//    [engine writePost:@"HELLO WORLD! #testing" replyToPostWithID:-1 annotations:nil links:nil block:^(ADNPost *post, NSError *error) {
+//        if (error) {
+//            [self requestFailed:error];
+//        } else {
+//            [self receivedPost:post];
+//        }
+//    }];
     
-    //[engine myStreamSinceID:152000 beforeID:-1 count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
+//    [engine postWithID:50 block:^(ADNPost *post, NSError *error) {
+//        if (error)
+//            [self requestFailed:error];
+//        else
+//            [self receivedPost:post];
+//    }];
+//    
+//    [engine deletePostWithID:50 block:^(ADNPost *post, NSError *error) {
+//        if (error)
+//            [self requestFailed:error];
+//        else
+//            [self receivedPost:post];
+//    }];
     
-    //[engine globalStreamSinceID:-1 beforeID:-1 count:10 includeUser:NO includeAnnotations:NO includeReplies:NO];
+//    [engine repliesToPostWithID:121511 block:^(NSArray *posts, NSError *error) {
+//        if (error)
+//            [self requestFailed:error];
+//        else
+//            [self receivedPosts:posts];
+//    }];
+//    
+//    [engine repliesToPostWithID:50 block:^(NSArray *posts, NSError *error) {
+//        if (error)
+//            [self requestFailed:error];
+//        else
+//            [self receivedPosts:posts];
+//    }];
     
-    //[engine taggedPostsWithTag:@"gamedev" sinceID:-1 beforeID:-1 count:20 includeUser:NO includeAnnotations:NO includeReplies:NO];
+//    [engine postsByMeWithBlock:^(NSArray *posts, NSError *error) {
+//        if (error)
+//            [self requestFailed:error];
+//        else
+//            [self receivedPosts:posts];
+//    }];
+//    
+//    [engine postsMentioningMeWithBlock:^(NSArray *posts, NSError *error) {
+//        if (error)
+//            [self requestFailed:error];
+//        else
+//            [self receivedPosts:posts];
+//    }];
+    
+//    [engine myStreamSinceID:152000 beforeID:-1 count:10 includeUser:NO includeAnnotations:NO includeReplies:NO block:^(NSArray *posts, NSError *error) {
+//        if (error)
+//            [self requestFailed:error];
+//        else
+//            [self receivedPosts:posts];
+//    }];
+    
+//    [engine globalStreamSinceID:-1 beforeID:-1 count:10 includeUser:NO includeAnnotations:NO includeReplies:NO block:^(NSArray *posts, NSError *error) {
+//        if (error)
+//            [self requestFailed:error];
+//        else
+//            [self receivedPosts:posts];
+//    }];
+
+    [engine taggedPostsWithTag:@"gamedev" sinceID:-1 beforeID:-1 count:20 includeUser:NO includeAnnotations:NO includeReplies:NO block:^(NSArray *posts, NSError *error) {
+        if (error)
+            [self requestFailed:error];
+        else
+            [self receivedPosts:posts];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (void) receivedUser:(ADNUser *)user forRequestUUID:(NSString *)uuid
+- (void) receivedUser:(ADNUser *)user
 {
     NSLog(@"Got User with username: %@", user.username);
 }
 
 //------------------------------------------------------------------------------
 
-- (void) requestFailed:(NSError *)error forRequestUUID:(NSString *)uuid
+- (void) requestFailed:(NSError *)error
 {
     NSLog(@"Failed!");
     
@@ -102,13 +262,14 @@
         NSLog(@"ADN Error: %ld - %@", code, [userInfo objectForKey:@"message"]);
     } else if ([domain compare:@"HTTP"] == NSOrderedSame) {
         NSLog(@"HTTP Error: %ld - %@", code, [userInfo objectForKey:@"message"]);
+    } else {
+        
     }
-    
 }
 
 //------------------------------------------------------------------------------
 
-- (void) receivedUsers:(NSArray *)users forRequestUUID:(NSString *)uuid
+- (void) receivedUsers:(NSArray *)users
 {
     for (ADNUser *user in users) {
         NSLog(@"got user: %@", user.username);
@@ -117,14 +278,14 @@
 
 //------------------------------------------------------------------------------
 
-- (void) receivedPost:(ADNPost *)post forRequestUUID:(NSString *)uuid
+- (void) receivedPost:(ADNPost *)post
 {
     NSLog(@"Got Post: %@", post.text);
 }
 
 //------------------------------------------------------------------------------
 
-- (void) receivedPosts:(NSArray *)posts forRequestUUID:(NSString *)uuid
+- (void) receivedPosts:(NSArray *)posts
 {
     for (ADNPost *post in posts) {
         NSLog(@"got post: %ld - %@", post.postId, post.text);

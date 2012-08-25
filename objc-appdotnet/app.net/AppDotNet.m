@@ -8,7 +8,7 @@
 
 #import "AppDotNet.h"
 #import "JSONKit.h"
-#import "ADNURLConnection.h"
+#import "ADNURLRequest.h"
 #import "ADNLink.h"
 
 @implementation AppDotNet
@@ -40,102 +40,103 @@
 
 //------------------------------------------------------------------------------
 
-- (void) parseUser:(NSDictionary*)userdict reportWithID:(NSString*)uuid
-{
-    // Create the user
-    ADNUser *user = [ADNUser userFromJSONDictionary:userdict];
-
-    // report to delegate.
-    [_delegate receivedUser:user forRequestUUID:uuid];
-}
-
-//------------------------------------------------------------------------------
-
-- (void) parsePost:(NSDictionary*)postDict reportWithID:(NSString*)uuid
-{
-    // create the post
-    ADNPost *post = [ADNPost postFromJSONDictionary:postDict];
-
-    // report to delegate.
-    [_delegate receivedPost:post forRequestUUID:uuid];
-}
-
-//------------------------------------------------------------------------------
-
-- (void) parseArray:(NSArray*)array 
-       responseType:(NSUInteger)responseType
-       reportWithID:(NSString*)uuid
+- (NSArray*) parseUserArray:(NSArray*)jsonResp
 {
     NSMutableArray *result = [NSMutableArray array];
-
-    // List is all users.
-    if (responseType & IS_USER) {
-        for (NSDictionary *dict in array) {
-            ADNUser *user = [ADNUser userFromJSONDictionary:dict];
-            [result addObject:user];
-        }
-        // report to delegate.
-        [_delegate receivedUsers:result forRequestUUID:uuid];
+    for (NSDictionary *dict in jsonResp) {
+        ADNUser *user = [ADNUser userFromJSONDictionary:dict];
+        [result addObject:user];
     }
+    return result;
+}
 
-    // List is all posts.
-    if (responseType & IS_POST) {
-        for (NSDictionary *dict in array) {
-            ADNPost *post = [ADNPost postFromJSONDictionary:dict];
-            [result addObject:post];
-        }
-        // report to delegate.
-        [_delegate receivedPosts:result forRequestUUID:uuid];
+//------------------------------------------------------------------------------
+
+- (NSArray*) parsePostArray:(NSArray*)jsonResp
+{
+    NSMutableArray *result = [NSMutableArray array];
+    for (NSDictionary *dict in jsonResp) {
+        ADNPost *post = [ADNPost postFromJSONDictionary:dict];
+        [result addObject:post];
+    }
+    return result;
+}
+
+//------------------------------------------------------------------------------
+
+- (void) processResponse:(NSDictionary*)jsonResp error:(NSError*)error 
+       receivedUserBlock:(ADNReceivedUser)block
+{
+    if (error) {
+        block(nil, error);
+    } else {
+        ADNUser *user = [ADNUser userFromJSONDictionary:jsonResp];
+        block(user, nil);
     }
 }
 
 //------------------------------------------------------------------------------
 
-- (void) parseDataForConnection:(ADNURLConnection*)connection
+- (void) processResponse:(NSDictionary*)jsonResp error:(NSError*)error 
+       receivedPostBlock:(ADNReceivedPost)block
 {
-    NSData *data = connection.data;
-    NSUInteger responseType = (NSUInteger)connection.responseType;
-    NSString *uuid = connection.uuid;
-    
+    if (error) {
+        block(nil, error);
+    } else {
+        ADNPost *post = [ADNPost postFromJSONDictionary:jsonResp];
+        block(post, nil);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+- (void) processResponse:(NSArray*)jsonResp error:(NSError*)error
+      receivedUsersBlock:(ADNReceivedUsers)block
+{
+    if (error) {
+        block(nil, error);
+    } else {
+        NSArray *users = [self parseUserArray:jsonResp];
+        block(users, nil);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+- (void) processResponse:(NSArray*)jsonResp error:(NSError*)error
+      receivedPostsBlock:(ADNReceivedPosts)block
+{
+    if (error) {
+        block(nil, error);
+    } else {
+        NSArray *posts = [self parsePostArray:jsonResp];
+        block(posts, nil);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+- (void) parseADNResponse:(NSData*)data 
+                    block:(void (^) (id jsonResp, NSError *err))block
+{
     // First of all, check if there is an error in the response.
     NSError *error = [self parseError:data];
     if (error) {
-        // Inform delegate and finish processing.
-        [_delegate requestFailed:error forRequestUUID:uuid];
-        return;
+        block(nil, error);
+    } else {
+        id dataObj = [[data objectFromJSONData] objectForKey:DATA_KEY];
+
+        NSAssert(dataObj, @"No valid object!");
+
+        block(dataObj, nil);
     }
-
-    if (responseType & DICT) {
-        NSDictionary *dataDict = [[data objectFromJSONData] objectForKey:DATA_KEY];
-
-        NSAssert(dataDict, @"No valid dictionary");
-
-        if (responseType & HAS_USER) {
-            NSDictionary *userDict = [dataDict objectForKey:USER_KEY];
-            NSAssert(userDict, @"No valid dictionary for user");
-            // parse the user and report to delegate.
-            [self parseUser:userDict reportWithID:uuid];
-        } else if (responseType & IS_USER) {
-            // parse the user and report to delegate.
-            [self parseUser:dataDict reportWithID:uuid];
-        } else if (responseType & IS_POST) {
-            // parse post and report.
-            [self parsePost:dataDict reportWithID:uuid];
-        }
-
-    } else if (responseType & LIST) {
-        NSArray *array = [[data objectFromJSONData] objectForKey:DATA_KEY];
-        [self parseArray:array responseType:responseType reportWithID:uuid];
-    }
-    
-    // TODO: Handle parsing HAS_SCOPES return type.
 }
 
 //------------------------------------------------------------------------------
 #pragma mark Private Helper Methods
 //------------------------------------------------------------------------------
 
-- (void) setHeader:(NSMutableURLRequest*)request
+- (void) setHeader:(ADNURLRequest*)request
 {
     NSString *val = [NSString stringWithFormat:@"Bearer %@", _accessToken];
     [request setValue:val forHTTPHeaderField:ADN_AUTH_HEADER];
@@ -163,12 +164,11 @@
 
 //------------------------------------------------------------------------------
 
-- (NSMutableURLRequest*) createRequest:(NSString*)uri
+- (ADNURLRequest*) createRequest:(NSString*)uri
 {
     NSString *fulluri = [NSString stringWithFormat:@"%@%@", ADN_API_URL, uri];
     NSURL *url = [NSURL URLWithString:fulluri];
-    NSMutableURLRequest *request = 
-        [[NSMutableURLRequest alloc] initWithURL:url];
+    ADNURLRequest *request = [[ADNURLRequest alloc] initWithURL:url];
     [self setHeader:request];
     
     return request;
@@ -179,8 +179,7 @@
 // This will create a GET request but also sets the appropriate GET paramets
 // from the dictionary of parameters given. It assumes that the keys and values
 // of the given "params" dictionary are all NSString.
-- (NSMutableURLRequest*) createRequest:(NSString*)uri 
-                                params:(NSDictionary*)params
+- (ADNURLRequest*) createRequest:(NSString*)uri params:(NSDictionary*)params
 {
     NSString *paramString = @"";
 
@@ -189,7 +188,7 @@
 
     NSString *fulluri = [NSString stringWithFormat:@"%@?%@", uri, paramString];
 
-    NSMutableURLRequest *request = [self createRequest:fulluri];
+    ADNURLRequest *request = [self createRequest:fulluri];
 
     return request;
 }
@@ -200,10 +199,9 @@
 // sent content of the BODY to include values in the key value pairs of the
 // given dictionary. Assumes that the keys and values in the dictionary are
 // strings. 
-- (NSMutableURLRequest*) createPostRequest:(NSString*)uri 
-                                    params:(NSDictionary*)params
+- (ADNURLRequest*) createPostRequest:(NSString*)uri params:(NSDictionary*)params
 {
-    NSMutableURLRequest *request = [self createRequest:uri];
+    ADNURLRequest *request = [self createRequest:uri];
 
     [request setHTTPMethod:@"POST"];
     
@@ -221,9 +219,9 @@
 
 //------------------------------------------------------------------------------
 
-- (NSMutableURLRequest*) createDeleteRequest:(NSString*)uri
+- (ADNURLRequest*) createDeleteRequest:(NSString*)uri
 {
-    NSMutableURLRequest *request = [self createRequest:uri];
+    ADNURLRequest *request = [self createRequest:uri];
     
     [request setHTTPMethod:@"DELETE"];
     
@@ -232,35 +230,50 @@
 
 //------------------------------------------------------------------------------
 
-- (NSString*) sendRequest:(NSMutableURLRequest*)request 
-             responseType:(enum ADNResponseType)responseType
+- (void) sendRequest:(ADNURLRequest*)request 
+               block:(void (^)(id jsonResp, NSError *err))block
 {
-    ADNURLConnection *connection = 
-        [ADNURLConnection connectionWithRequest:request delegate:self
-                                   responseType:responseType];
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:NSOperationQueue.mainQueue
+                           completionHandler:^(NSURLResponse *response, 
+                                               NSData *data, 
+                                               NSError *error) {
+        NSHTTPURLResponse *httpresp = (NSHTTPURLResponse*)response;
+        // Check if we have an error
+        if (error) {
+            block(nil, error);
+        } else {
+            NSInteger statusCode = [httpresp statusCode];
+            if (statusCode >= 400) {
+                // Assume failure and report to user.
 
-    // Preserve the connection.
-    [_connections setObject:connection forKey:connection.uuid];
+                // Convert data response into string.
+                NSString *body = [data length] ?                
+                                 [NSString stringWithUTF8String:[data bytes]] : 
+                                 @"";
+                NSMutableDictionary *info = [NSMutableDictionary dictionary];
+                [info setObject:httpresp forKey:@"response"];
+                [info setObject:body forKey:MESSAGE_KEY];
 
-    return connection.uuid;
+                NSError *error = [NSError errorWithDomain:@"HTTP"
+                                                     code:statusCode
+                                                 userInfo:info];
+                block(nil, error);
+            } else {
+                // parse the response and call the completion block from
+                // parsing method.
+                [self parseADNResponse:data block:block];
+            }
+        }
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (void) destroyConnection:(ADNURLConnection*)connection
-{
-    [_connections removeObjectForKey:[connection uuid]];
-}
-
-//------------------------------------------------------------------------------
-
-- (AppDotNet*) initWithDelegate:(id<ADNDelegate>)delegate 
-                    accessToken:(NSString*)token
+- (AppDotNet*) initWithAccessToken:(NSString*)token
 {
     self = [super init];
-    _delegate = delegate;
     _accessToken = [token retain];
-    _connections = [[NSMutableDictionary dictionary] retain];
     return self;
 }
 
@@ -269,7 +282,6 @@
 - (void) dealloc
 {
     [_accessToken release];
-    [_connections release];
     [_clientVersion release];
     [_clientName release];
     
@@ -280,194 +292,213 @@
 #pragma mark API Methods
 //------------------------------------------------------------------------------
 
-
-- (NSString*) checkCurrentToken
+- (void) checkCurrentTokenWithBlock:(ADNReceivedScopeAndUser)block
 {
-    NSMutableURLRequest *request = [self createRequest:@"/stream/0/token"];
-    enum ADNResponseType responseType = DICT | HAS_USER | HAS_SCOPES;
-    return [self sendRequest:request responseType:responseType];
+    ADNURLRequest *request = [self createRequest:@"/stream/0/token"];
+
+    [self sendRequest:request block:^(NSDictionary *jsonResp, NSError *err) {
+        if (err) {
+            block(nil, nil, err);
+        } else {
+            NSDictionary *userDict = [jsonResp objectForKey:USER_KEY];
+            ADNUser *user = [ADNUser userFromJSONDictionary:userDict];
+
+            block(nil, user, nil);
+        }
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) getUserWithUsername:(NSString*)username
+- (void) userWithUsername:(NSString*)username block:(ADNReceivedUser)block
 {
     NSString *uri = 
         [NSString stringWithFormat:@"/stream/0/users/%@", username];
-    NSMutableURLRequest *request = [self createRequest:uri];
-    
-    enum ADNResponseType responseType = DICT | IS_USER;
-    
-    return [self sendRequest:request responseType:responseType];
+    ADNURLRequest *request =[self createRequest:uri];
+
+    [self sendRequest:request block:^(NSDictionary *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedUserBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) getUserWithID:(NSUInteger)uid
+- (void) userWithID:(NSUInteger)uid block:(ADNReceivedUser)block
 {
     NSString *str = [NSString stringWithFormat:@"%ld", uid];
-    return [self getUserWithUsername:str];
+    [self userWithUsername:str block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) getMe
+- (void) meWithBlock:(ADNReceivedUser)block
 {
-    return [self getUserWithUsername:MY_USERID];
+    [self userWithUsername:MY_USERID block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) followUserWithUsername:(NSString*)username
+- (void) followUserWithUsername:(NSString*)username
+                               block:(ADNReceivedUser)block
 {
     NSString *uri = 
         [NSString stringWithFormat:@"/stream/0/users/%@/follow", username];
 
-    NSMutableURLRequest *request = [self createPostRequest:uri params:nil];
+    ADNURLRequest *request = [self createPostRequest:uri params:nil];
     
-    enum ADNResponseType responseType = DICT | IS_USER;
-    
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSDictionary *jsonResp, NSError *err) {
+        [self processResponse:jsonResp error:err receivedUserBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) followUserWithID:(NSUInteger)uid
+- (void) followUserWithID:(NSUInteger)uid block:(ADNReceivedUser)block
 {
     NSString *str = [NSString stringWithFormat:@"%ld", uid];
-    return [self followUserWithUsername:str];
+    [self followUserWithUsername:str block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) unfollowUserWithUsername:(NSString*)username
+- (void) unfollowUserWithUsername:(NSString*)username 
+                            block:(ADNReceivedUser)block
 {
     NSString *uri =
         [NSString stringWithFormat:@"/stream/0/users/%@/follow", username];
     
-    NSMutableURLRequest *request = [self createDeleteRequest:uri];
+    ADNURLRequest *request = [self createDeleteRequest:uri];
     
-    enum ADNResponseType responseType = DICT | IS_USER;
-    
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSDictionary *jsonResp, NSError *err) {
+        [self processResponse:jsonResp error:err receivedUserBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) unfollowUserWithID:(NSUInteger)uid
+- (void) unfollowUserWithID:(NSUInteger)uid 
+                      block:(ADNReceivedUser)block
 {
     NSString *str = [NSString stringWithFormat:@"%ld", uid];
-    return [self unfollowUserWithUsername:str];
+    [self unfollowUserWithUsername:str block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) followedByUsername:(NSString*)username
+- (void) followedByUsername:(NSString*)username
+                      block:(ADNReceivedUsers)block
 {
     NSString *uri = 
         [NSString stringWithFormat:@"/stream/0/users/%@/following", username];
     
-    NSMutableURLRequest *request = [self createRequest:uri];
+    ADNURLRequest *request = [self createRequest:uri];
     
-    enum ADNResponseType responseType = LIST | IS_USER;
-    
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSArray *jsonResp, NSError *err) {
+        [self processResponse:jsonResp error:err receivedUsersBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) followedByID:(NSUInteger)uid
+- (void) followedByID:(NSUInteger)uid
+                block:(ADNReceivedUsers)block
 {
     NSString *str = [NSString stringWithFormat:@"%ld", uid];
-    return [self followedByUsername:str];
+    [self followedByUsername:str block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) followedByMe
+- (void) followedByMeWithBlock:(ADNReceivedUsers)block
 {
-    return [self followedByUsername:MY_USERID];
+    return [self followedByUsername:MY_USERID block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) followersOfUsername:(NSString*)username
+- (void) followersOfUsername:(NSString*)username
+                       block:(ADNReceivedUsers)block
 {
     NSString *uri = 
         [NSString stringWithFormat:@"/stream/0/users/%@/followers", username];
     
-    NSMutableURLRequest *request = [self createRequest:uri];
+    ADNURLRequest *request = [self createRequest:uri];
     
-    enum ADNResponseType responseType = LIST | IS_USER;
-    
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSArray *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedUsersBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) followersOfID:(NSUInteger)uid
+- (void) followersOfID:(NSUInteger)uid
+                 block:(ADNReceivedUsers)block
 {
     NSString *str = [NSString stringWithFormat:@"%ld", uid];
-    return [self followersOfUsername:str];
+    [self followersOfUsername:str block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) followersOfMe
+- (void) followersOfMeWithBlock:(ADNReceivedUsers)block
 {
-    return [self followersOfUsername:MY_USERID];
+    [self followersOfUsername:MY_USERID block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) muteUserWithUsername:(NSString *)username
+- (void) muteUserWithUsername:(NSString*)username
+                        block:(ADNReceivedUser)block
 {
     NSString *uri =
         [NSString stringWithFormat:@"/stream/0/users/%@/mute", username];
     
-    NSMutableURLRequest *request = [self createPostRequest:uri params:nil];
+    ADNURLRequest *request = [self createPostRequest:uri params:nil];
     
-    enum ADNResponseType responseType = DICT | IS_USER;
-    
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSDictionary *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedUserBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) muteUserWithID:(NSUInteger)uid
+- (void) muteUserWithID:(NSUInteger)uid
+                  block:(ADNReceivedUser)block
 {
     NSString *str = [NSString stringWithFormat:@"%ld", uid];
-    return [self muteUserWithUsername:str];
+    [self muteUserWithUsername:str block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) unmuteUserWithUsername:(NSString *)username
+- (void) unmuteUserWithUsername:(NSString *)username
+                          block:(ADNReceivedUser)block
 {
     NSString *uri =
     [NSString stringWithFormat:@"/stream/0/users/%@/mute", username];
     
-    NSMutableURLRequest *request = [self createDeleteRequest:uri];
-    
-    enum ADNResponseType responseType = DICT | IS_USER;
-    
-    return [self sendRequest:request responseType:responseType];
+    ADNURLRequest *request = [self createDeleteRequest:uri];
+
+    [self sendRequest:request block:^(NSDictionary *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedUserBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) unmuteUserWithID:(NSUInteger)uid
+- (void) unmuteUserWithID:(NSUInteger)uid block:(ADNReceivedUser)block
 {
     NSString *str = [NSString stringWithFormat:@"%ld", uid];
-    return [self muteUserWithUsername:str];
+    [self muteUserWithUsername:str block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) writePost:(NSString*)text
-      replyToPostWithID:(NSInteger)postId
-            annotations:(NSDictionary*)annotations
-                  links:(NSArray*)links
+- (void) writePost:(NSString*)text
+ replyToPostWithID:(NSInteger)postId
+       annotations:(NSDictionary*)annotations
+             links:(NSArray*)links
+             block:(ADNReceivedPost)block
 {
     NSString *uri = @"/stream/0/posts";
 
@@ -492,120 +523,127 @@
     
     [postValues setObject:text forKey:TEXT_KEY];
 
-    NSMutableURLRequest *request = [self createPostRequest:uri 
-                                                    params:postValues];
+    ADNURLRequest *request = [self createPostRequest:uri params:postValues];
 
-    enum ADNResponseType responseType = DICT | IS_POST;
-
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSDictionary *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedPostBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) postWithID:(NSUInteger)postId
+- (void) postWithID:(NSUInteger)postId
+              block:(ADNReceivedPost)block
 {
     NSString *uri = [NSString stringWithFormat:@"/stream/0/posts/%ld", postId];
 
-    NSMutableURLRequest *request = [self createRequest:uri];
+    ADNURLRequest *request = [self createRequest:uri];
 
-    enum ADNResponseType responseType = DICT | IS_POST;
-
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSDictionary *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedPostBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) deletePostWithID:(NSUInteger)postId
+- (void) deletePostWithID:(NSUInteger)postId
+                    block:(ADNReceivedPost)block
 {
     NSString *uri = [NSString stringWithFormat:@"/stream/0/posts/%ld", postId];
 
-    NSMutableURLRequest *request = [self createDeleteRequest:uri];
+    ADNURLRequest *request = [self createDeleteRequest:uri];
 
-    enum ADNResponseType responseType = DICT | IS_POST;
-
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSDictionary *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedPostBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) repliesToPostWithID:(NSUInteger)postId
+- (void) repliesToPostWithID:(NSUInteger)postId
+                       block:(ADNReceivedPosts)block
 {
     NSString *uri = 
         [NSString stringWithFormat:@"/stream/0/posts/%ld/replies", postId];
 
-    NSMutableURLRequest *request = [self createRequest:uri];
+    ADNURLRequest *request = [self createRequest:uri];
 
-    enum ADNResponseType responseType = LIST | IS_POST;
-
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSArray *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedPostsBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) postsByUserWithUsername:(NSString*)username
+- (void) postsByUserWithUsername:(NSString*)username
+                           block:(ADNReceivedPosts)block
 {
     NSString *uri = 
         [NSString stringWithFormat:@"/stream/0/users/%@/posts/", username];
 
-    NSMutableURLRequest *request = [self createRequest:uri];
+    ADNURLRequest *request = [self createRequest:uri];
 
-    enum ADNResponseType responseType = LIST | IS_POST;
-
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSArray *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedPostsBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) postsByUserWithID:(NSUInteger)uid
+- (void) postsByUserWithID:(NSUInteger)uid
+                     block:(ADNReceivedPosts)block
 {
     NSString *str = [NSString stringWithFormat:@"%ld", uid];
-    return [self postsByUserWithUsername:str];
+    [self postsByUserWithUsername:str block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) postsByMe
+- (void) postsByMeWithBlock:(ADNReceivedPosts)block
 {
-    return [self postsByUserWithUsername:MY_USERID];
+    [self postsByUserWithUsername:MY_USERID block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) postsMentioningUserWithUsername:(NSString*)username
+- (void) postsMentioningUserWithUsername:(NSString*)username
+                                   block:(ADNReceivedPosts)block
 {
     NSString *uri = 
         [NSString stringWithFormat:@"/stream/0/users/%@/mentions", username];
 
-    NSMutableURLRequest *request = [self createRequest:uri];
+    ADNURLRequest *request = [self createRequest:uri];
 
-    enum ADNResponseType responseType = LIST | IS_POST;
-
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSArray *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedPostsBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) postsMentioningUserWithID:(NSUInteger)uid
+- (void) postsMentioningUserWithID:(NSUInteger)uid
+                             block:(ADNReceivedPosts)block
 {
     NSString *str = [NSString stringWithFormat:@"%ld", uid];
-    return [self postsMentioningUserWithUsername:str];
+    [self postsMentioningUserWithUsername:str block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) postsMentioningMe
+- (void) postsMentioningMeWithBlock:(ADNReceivedPosts)block;
 {
-    return [self postsMentioningUserWithUsername:MY_USERID];
+    return [self postsMentioningUserWithUsername:MY_USERID block:block];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) mutedUsers
+- (void) mutedUsersWithBlock:(ADNReceivedUsers)block
 {
     NSString *uri = @"/stream/0/users/me/muted";
-    NSMutableURLRequest *request = [self createRequest:uri];
-    enum ADNResponseType responseType = LIST | IS_USER;
-    return [self sendRequest:request responseType:responseType];
+    ADNURLRequest *request = [self createRequest:uri];
+    [self sendRequest:request block:^(NSArray *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedUsersBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
@@ -645,12 +683,13 @@
 
 //------------------------------------------------------------------------------
 
-- (NSString*) myStreamSinceID:(NSInteger)sinceId 
-                     beforeID:(NSInteger)beforeId
-                        count:(NSUInteger)count
-                  includeUser:(BOOL)includeUser 
-           includeAnnotations:(BOOL)includeAnnotations
-               includeReplies:(BOOL)includeReplies
+- (void) myStreamSinceID:(NSInteger)sinceId 
+                beforeID:(NSInteger)beforeId 
+                   count:(NSUInteger)count 
+             includeUser:(BOOL)includeUser 
+      includeAnnotations:(BOOL)includeAnnotations 
+          includeReplies:(BOOL)includeReplies
+                   block:(ADNReceivedPosts)block
 {
     NSString *uri = @"/stream/0/posts/stream";
 
@@ -663,21 +702,22 @@
                                     includeReplies:includeReplies];
 
     // Create the Get request with parameters.
-    NSMutableURLRequest *request = [self createRequest:uri params:params];
+    ADNURLRequest *request = [self createRequest:uri params:params];
 
-    enum ADNResponseType responseType = LIST | IS_POST;
-
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSArray *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedPostsBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) globalStreamSinceID:(NSInteger)sinceId 
-                         beforeID:(NSInteger)beforeId 
-                            count:(NSUInteger)count 
-                      includeUser:(BOOL)includeUser 
-               includeAnnotations:(BOOL)includeAnnotations 
-                   includeReplies:(BOOL)includeReplies
+- (void) globalStreamSinceID:(NSInteger)sinceId 
+                    beforeID:(NSInteger)beforeId 
+                       count:(NSUInteger)count 
+                 includeUser:(BOOL)includeUser 
+          includeAnnotations:(BOOL)includeAnnotations 
+              includeReplies:(BOOL)includeReplies
+                       block:(ADNReceivedPosts)block
 {
     NSString *uri = @"/stream/0/posts/stream/global";
 
@@ -690,22 +730,23 @@
                                     includeReplies:includeReplies];
 
     // Create the Get request with parameters.
-    NSMutableURLRequest *request = [self createRequest:uri params:params];
+    ADNURLRequest *request = [self createRequest:uri params:params];
 
-    enum ADNResponseType responseType = LIST | IS_POST;
-
-    return [self sendRequest:request responseType:responseType];
+    [self sendRequest:request block:^(NSArray *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedPostsBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------
 
-- (NSString*) taggedPostsWithTag:(NSString*)tag
-                         sinceID:(NSInteger)sinceId 
-                        beforeID:(NSInteger)beforeId 
-                           count:(NSUInteger)count 
-                     includeUser:(BOOL)includeUser 
-              includeAnnotations:(BOOL)includeAnnotations 
-                  includeReplies:(BOOL)includeReplies
+- (void) taggedPostsWithTag:(NSString*)tag 
+                    sinceID:(NSInteger)sinceId 
+                   beforeID:(NSInteger)beforeId 
+                      count:(NSUInteger)count 
+                includeUser:(BOOL)includeUser 
+         includeAnnotations:(BOOL)includeAnnotations 
+             includeReplies:(BOOL)includeReplies
+                      block:(ADNReceivedPosts)block
 {
     NSString *uri = [NSString stringWithFormat:@"/stream/0/posts/tag/%@", tag];
 
@@ -718,74 +759,11 @@
                                     includeReplies:includeReplies];
 
     // Create the Get request with parameters.
-    NSMutableURLRequest *request = [self createRequest:uri params:params];
+    ADNURLRequest *request = [self createRequest:uri params:params];
 
-    enum ADNResponseType responseType = LIST | IS_POST;
-
-    return [self sendRequest:request responseType:responseType];
-}
-
-//------------------------------------------------------------------------------
-#pragma mark NSURLConnection Methods
-//------------------------------------------------------------------------------
-
-- (void) connection:(ADNURLConnection*)connection
- didReceiveResponse:(NSURLResponse*)response
-{
-    // We got a response, so we start by emptying out the data. 
-    [connection resetDataLength];
-    
-    connection.response = (NSHTTPURLResponse*)response;
-}
-
-//------------------------------------------------------------------------------
-
-- (void) connection:(ADNURLConnection*)connection didReceiveData:(NSData*)data
-{
-    // Got some new data, so just append it.
-    [connection appendData:data];
-}
-
-//------------------------------------------------------------------------------
-
-- (void) connection:(ADNURLConnection*)connection 
-   didFailWithError:(NSError*)error
-{
-    // Inform the delegate and release connection.
-    [_delegate requestFailed:error forRequestUUID:connection.uuid];
-    [self destroyConnection:connection];
-}
-
-//------------------------------------------------------------------------------
-
-- (void) connectionDidFinishLoading:(ADNURLConnection*)connection
-{
-    // Once this method is invoked, "data" contains the complete result
-    NSMutableData *data = connection.data;
-
-    // Check status code.
-    NSInteger statusCode = [[connection response] statusCode];
-    if (statusCode >= 400){
-        // Assume failure and report to delegate.
-        
-        // Convert response data to string.
-        NSString *body = 
-            [data length] ? [NSString stringWithUTF8String:[data bytes]] : @"";
-        NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:
-            [connection response], @"response", 
-            body, @"body", 
-            nil];
-        NSError *error = [NSError errorWithDomain:@"HTTP" 
-                                             code:statusCode
-                                         userInfo:info];
-
-        // Report to delegate.
-        [_delegate requestFailed:error forRequestUUID:connection.uuid];
-    } else {
-        [self parseDataForConnection:connection];
-    }
-
-    [self destroyConnection:connection];
+    [self sendRequest:request block:^(NSArray *jsonResp, NSError *error) {
+        [self processResponse:jsonResp error:error receivedPostsBlock:block];
+    }];
 }
 
 //------------------------------------------------------------------------------

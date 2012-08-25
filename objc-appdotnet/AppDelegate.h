@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "app.net/AppDotNet.h"
 
-@interface AppDelegate : NSObject <NSApplicationDelegate, ADNDelegate>
+@interface AppDelegate : NSObject <NSApplicationDelegate>
 
 @property (assign) IBOutlet NSWindow *window;
 
