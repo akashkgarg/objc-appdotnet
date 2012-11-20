@@ -24,10 +24,9 @@
 
 - (id) initWithJSONDictionary:(NSDictionary*)dict
 {
-    [self initWithHeight:[[dict objectForKey:HEIGHT_KEY] intValue]
+    return [self initWithHeight:[[dict objectForKey:HEIGHT_KEY] intValue]
                    width:[[dict objectForKey:WIDTH_KEY] intValue]
                      url:[dict objectForKey:URL_KEY]];
-    return self;
 }
 
 //------------------------------------------------------------------------------
